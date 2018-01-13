@@ -60,6 +60,7 @@ class Index extends React.Component {
             body {
               font: 400 18px/24px "gentium book basic", serif;
               color: #333;
+              -webkit-font-smoothing: antialiased;
             }
             .dosis {
               font-family: "Dosis", sans-serif;
