@@ -45,10 +45,44 @@ const Block = props => {
           width: 75px;
           color: #aaa;
         }
+        @keyframes pop {
+          0% {
+            transform: scale(0.01);
+            opacity: 0;
+          }
+          80% {
+            transform: scale(1.3);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
         .btn {
           cursor: pointer;
           vertical-align: middle;
           margin-left: 4px;
+          display: inline-block;
+          animation: pop 0.2s ease-out;
+          animation-fill-mode: backwards;
+        }
+        .controls .btn:nth-child(1) {
+          animation-delay: 0.15s;
+        }
+        .controls .btn:nth-child(2) {
+          animation-delay: 0.05s;
+        }
+
+        .timestamp {
+          animation: fadeIn 0.2s ease-out;
         }
       `}</style>
 
