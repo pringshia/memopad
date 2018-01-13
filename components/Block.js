@@ -115,7 +115,9 @@ const Block = props => {
         {/* <pre>{props.entry.type}</pre> */}
         {
           <div
-            dangerouslySetInnerHTML={{ __html: marked(props.entry.contents) }}
+            dangerouslySetInnerHTML={{
+              __html: marked(props.entry.contents) || "&nbsp;"
+            }}
           />
         }
       </div>
