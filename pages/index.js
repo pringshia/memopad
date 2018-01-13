@@ -1,38 +1,13 @@
 import Head from "next/head";
 import LoadFonts from "~/utilities/Fonts";
 import Header from "~/components/Header";
-import Block from "~/components/Block";
-import EntryBox from "~/components/EntryBox";
-import moment from "moment";
-
-const marked = require("marked");
-marked.setOptions({
-  renderer: new marked.Renderer(),
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false
-});
+import LogPad from "~/components/LogPad";
 
 class Index extends React.Component {
   componentDidMount() {
     LoadFonts();
   }
-  state = { newEntries: [] };
-  handleNewEntry = contents => {
-    this.setState({
-      newEntries: [
-        ...this.state.newEntries,
-        {
-          contents,
-          timestamp: moment().format("h:mm A")
-        }
-      ]
-    });
-  };
+
   render() {
     return (
       <div>
@@ -84,7 +59,7 @@ class Index extends React.Component {
 
           <h1 className="title dosis text-4xl uppercase">Memopad</h1>
 
-          <Header>Deciding the technologies</Header>
+          {/* <Header>Deciding the technologies</Header>
           <Block timestamp="05:11 PM">
             Working on building an app with{" "}
             <a href="https://zeit.co/blog/next4">next.js</a>
@@ -115,15 +90,8 @@ class Index extends React.Component {
             to quickly add entries.
           </Block>
           <Block>Going to need some sort of input area</Block>
-          <Block>The ability to embed images would be cool too</Block>
-          {this.state.newEntries.map((entry, idx) => (
-            <Block timestamp={entry.timestamp} key={idx}>
-              <div
-                dangerouslySetInnerHTML={{ __html: marked(entry.contents) }}
-              />
-            </Block>
-          ))}
-          <EntryBox onSubmit={this.handleNewEntry} />
+          <Block>The ability to embed images would be cool too</Block> */}
+          <LogPad />
         </div>
       </div>
     );
