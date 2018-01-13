@@ -3,11 +3,24 @@ import LoadFonts from "~/utilities/Fonts";
 import Header from "~/components/Header";
 import Block from "~/components/Block";
 import EntryBox from "~/components/EntryBox";
+import moment from "moment";
 
 class Index extends React.Component {
   componentDidMount() {
     LoadFonts();
   }
+  state = { newEntries: [] };
+  handleNewEntry = contents => {
+    this.setState({
+      newEntries: [
+        ...this.state.newEntries,
+        {
+          contents,
+          timestamp: moment().format("h:mm A")
+        }
+      ]
+    });
+  };
   render() {
     return (
       <div>
@@ -90,7 +103,12 @@ class Index extends React.Component {
           </Block>
           <Block>Going to need some sort of input area</Block>
           <Block>The ability to embed images would be cool too</Block>
-          <EntryBox />
+          {this.state.newEntries.map((entry, idx) => (
+            <Block timestamp={entry.timestamp} key={idx}>
+              {entry.contents}
+            </Block>
+          ))}
+          <EntryBox onSubmit={this.handleNewEntry} />
         </div>
       </div>
     );
