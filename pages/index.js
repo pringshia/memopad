@@ -31,9 +31,7 @@ class Index extends React.Component {
               font: 400 18px/24px "gentium book basic", serif;
               color: #333;
             }
-            h1,
-            .header,
-            .timestamp {
+            .dosis {
               font-family: "Dosis", sans-serif;
             }
             a,
@@ -42,19 +40,18 @@ class Index extends React.Component {
             }
             body {
               opacity: 0;
+              padding-bottom: 75px;
             }
             .fonts-loaded body,
             .fonts-failed body {
               opacity: 1;
             }
-          `}</style>
-          <style jsx>{`
             .title {
               margin: 90px 75px 60px;
             }
           `}</style>
 
-          <h1 className="title text-4xl uppercase">Memopad</h1>
+          <h1 className="title dosis text-4xl uppercase">Memopad</h1>
 
           <Header>Deciding the technologies</Header>
           <Block timestamp="05:11 PM">
@@ -64,7 +61,7 @@ class Index extends React.Component {
           <Block>Hopefully I learn some more about SSR along the way</Block>
 
           <Block>
-            Deployments done via Zeit's other great product,{" "}
+            Deployments done via zeit.co's other acclaimed product,{" "}
             <a href="https://now.sh">now</a>
           </Block>
           <Block>

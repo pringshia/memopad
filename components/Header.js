@@ -3,8 +3,6 @@ const Header = props => {
     <React.Fragment>
       <style jsx>{`
         .header {
-          //   padding: 10px 75px;
-          //   margin: 10px 0;
           margin: 35px 75px 10px;
           color: orangered;
           font-size: 20px;
@@ -12,7 +10,7 @@ const Header = props => {
           border-bottom: 1px dotted #ddd;
         }
       `}</style>
-      <div className="header">{props.children}</div>
+      <div className="header dosis">{props.children}</div>
     </React.Fragment>
   );
 };

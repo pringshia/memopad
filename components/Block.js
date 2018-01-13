@@ -18,7 +18,9 @@ const Block = props => {
 
       <div className="block">
         {props.timestamp && (
-          <span className="timestamp text-sm pr-4">{props.timestamp}</span>
+          <span className="timestamp dosis text-sm pr-4">
+            {props.timestamp}
+          </span>
         )}
         {props.children}
       </div>
