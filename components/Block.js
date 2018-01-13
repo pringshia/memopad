@@ -50,9 +50,11 @@ const Block = props => {
             transform: scale(0.01);
             opacity: 0;
           }
-          80% {
-            transform: scale(1.3);
+          40% {
             opacity: 1;
+          }
+          80% {
+            transform: scale(1.15);
           }
           100% {
             transform: scale(1);
