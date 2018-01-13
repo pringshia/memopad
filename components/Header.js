@@ -6,14 +6,12 @@ const Header = props => {
   return (
     <React.Fragment>
       <style jsx>{`
-        .header {
-          margin: 35px 0 10px;
-          padding: 0px 75px 0px;
+        .block.header {
+          margin-top: 35px;
           color: orangered;
           font-size: 20px;
-          position: relative;
         }
-        .content {
+        .header_name {
           border-bottom: 1px dotted #ddd;
           padding-bottom: 5px;
         }
@@ -21,7 +19,7 @@ const Header = props => {
 
       <style jsx>{`
         .block {
-          padding-left: 75px;
+          padding: 0 75px;
           margin-bottom: 10px;
           position: relative;
         }
@@ -92,7 +90,7 @@ const Header = props => {
           animation: fadeIn 0.1s ease-out;
         }
       `}</style>
-      <div className="header dosis">
+      <div className="header block dosis">
         {" "}
         <span className="controls dosis text-sm pr-4">
           <span
@@ -108,7 +106,7 @@ const Header = props => {
             <EditIcon size={16} />
           </span>
         </span>
-        <div className="content">{props.children}</div>
+        <div className="header_name">{props.children}</div>
       </div>
     </React.Fragment>
   );
