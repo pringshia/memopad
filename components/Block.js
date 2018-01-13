@@ -1,4 +1,5 @@
 import TrashIcon from "~/icons/Trash";
+import InsertIcon from "~/icons/Insert";
 import EditIcon from "~/icons/Edit";
 
 const marked = require("marked");
@@ -40,9 +41,9 @@ const Block = props => {
         span.controls,
         span.timestamp {
           position: absolute;
-          left: 0px;
+          left: -10px;
           text-align: right;
-          width: 75px;
+          width: 85px;
           color: #aaa;
         }
         @keyframes pop {
@@ -77,9 +78,12 @@ const Block = props => {
           animation-fill-mode: backwards;
         }
         .controls .btn:nth-child(1) {
-          animation-delay: 0.15s;
+          animation-delay: 0.25s;
         }
         .controls .btn:nth-child(2) {
+          animation-delay: 0.15s;
+        }
+        .controls .btn:nth-child(3) {
           animation-delay: 0.05s;
         }
 
@@ -95,11 +99,17 @@ const Block = props => {
           </span>
         )}
         <span className="controls dosis text-sm pr-4">
+          <span
+            className="btn"
+            onClick={() => props.onInsertBefore(props.entry.id)}
+          >
+            <InsertIcon size={16} />
+          </span>
           <span className="btn" onClick={() => props.onDelete(props.entry.id)}>
-            <TrashIcon size={18} />
+            <TrashIcon size={16} />
           </span>
           <span className="btn" onClick={() => props.onEdit(props.entry.id)}>
-            <EditIcon size={18} />
+            <EditIcon size={16} />
           </span>
         </span>
         {
