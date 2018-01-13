@@ -2,6 +2,7 @@ import Head from "next/head";
 import LoadFonts from "~/utilities/Fonts";
 import Header from "~/components/Header";
 import Block from "~/components/Block";
+import EntryBox from "~/components/EntryBox";
 
 class Index extends React.Component {
   componentDidMount() {
@@ -13,6 +14,10 @@ class Index extends React.Component {
         <div className="p-8 pt-16">
           <Head>
             <title>Memopad</title>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+            />
             <link
               href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css"
               rel="stylesheet"
@@ -85,6 +90,7 @@ class Index extends React.Component {
           </Block>
           <Block>Going to need some sort of input area</Block>
           <Block>The ability to embed images would be cool too</Block>
+          <EntryBox />
         </div>
       </div>
     );
