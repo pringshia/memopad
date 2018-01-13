@@ -20,9 +20,6 @@ const Block = props => {
           margin-bottom: 10px;
           position: relative;
         }
-        .block:hover {
-          background-color: #ffffdd;
-        }
         .block:hover span.timestamp {
           display: none;
         }

@@ -22,23 +22,55 @@ export class LogPad extends React.Component {
   };
   handleDelete = id => {
     console.log(id);
-    this.setState({
-      newEntries: this.state.newEntries.filter(entry => entry.id !== id)
-    });
+    this.setState(
+      {
+        newEntries: this.state.newEntries.filter(entry => entry.id !== id)
+      },
+      this.synchronize
+    );
   };
   handleNewEntry = contents => {
     const currentTime = moment();
-    this.setState({
-      newEntries: [
-        ...this.state.newEntries,
-        {
-          contents,
-          timestamp: currentTime,
-          id: this.hashCode(currentTime.valueOf() + contents)
-        }
-      ]
-    });
+    this.setState(
+      {
+        newEntries: [
+          ...this.state.newEntries,
+          {
+            contents,
+            timestamp: currentTime,
+            id: this.hashCode(currentTime.valueOf() + contents)
+          }
+        ]
+      },
+      this.synchronize
+    );
   };
+  synchronize() {
+    if (localStorage) {
+      localStorage.setItem(
+        "memopad_logentriesv01",
+        JSON.stringify(
+          this.state.newEntries.map(e => ({
+            ...e,
+            timestamp: e.timestamp.toJSON()
+          }))
+        )
+      );
+    }
+  }
+  componentDidMount() {
+    if (localStorage) {
+      const data = localStorage.getItem("memopad_logentriesv01");
+      if (data) {
+        this.setState({
+          newEntries: JSON.parse(data).map(e => ({
+            ...e,
+            timestamp: moment(e.timestamp)
+          }))
+        });
+      }
+    }
+  }
   render() {
     let last = null,
       nodes = [];
