@@ -93,12 +93,6 @@ const Header = props => {
       <div className="header block dosis">
         {" "}
         <span className="controls dosis text-sm pr-4">
-          <span
-            className="btn"
-            onClick={() => props.onInsertBefore(props.entry.id)}
-          >
-            <InsertIcon size={16} />
-          </span>
           <span className="btn" onClick={() => props.onDelete(props.entry.id)}>
             <TrashIcon size={16} />
           </span>
@@ -106,7 +100,7 @@ const Header = props => {
             <EditIcon size={16} />
           </span>
         </span>
-        <div className="header_name">{props.children}</div>
+        <div className="header_name">{props.entry.contents}</div>
       </div>
     </React.Fragment>
   );

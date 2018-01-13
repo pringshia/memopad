@@ -126,7 +126,14 @@ export class LogPad extends React.Component {
       nodes = [];
     this.state.newEntries.forEach((entry, i) => {
       if (entry.type === "header") {
-        nodes.push(<Header key={entry.id}>{entry.contents}</Header>);
+        nodes.push(
+          <Header
+            onDelete={this.handleDelete}
+            onEdit={this.handleEdit}
+            entry={entry}
+            key={entry.id}
+          />
+        );
       } else if (
         last &&
         last.type === "entry" &&
