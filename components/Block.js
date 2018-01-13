@@ -1,3 +1,6 @@
+import TrashIcon from "~/icons/Trash";
+import EditIcon from "~/icons/Edit";
+
 const marked = require("marked");
 
 marked.setOptions({
@@ -44,6 +47,8 @@ const Block = props => {
         }
         .btn {
           cursor: pointer;
+          vertical-align: middle;
+          margin-left: 4px;
         }
       `}</style>
 
@@ -55,7 +60,10 @@ const Block = props => {
         )}
         <span className="controls dosis text-sm pr-4">
           <span className="btn" onClick={() => props.onDelete(props.entry.id)}>
-            Delete
+            <TrashIcon size={18} />
+          </span>
+          <span className="btn" onClick={() => props.onEdit(props.entry.id)}>
+            <EditIcon size={18} />
           </span>
         </span>
         {
