@@ -16,26 +16,51 @@ const Block = props => {
     <React.Fragment>
       <style jsx>{`
         .block {
-          margin-left: 75px;
+          padding-left: 75px;
           margin-bottom: 10px;
           position: relative;
         }
+        .block:hover {
+          background-color: #ffffdd;
+        }
+        .block:hover span.timestamp {
+          display: none;
+        }
+        .block:hover span.controls {
+          display: block;
+        }
+        .controls {
+          display: none;
+        }
+        span.controls,
         span.timestamp {
           position: absolute;
-          left: -75px;
+          left: 0px;
           text-align: right;
           width: 75px;
           color: #aaa;
         }
+        .btn {
+          cursor: pointer;
+        }
       `}</style>
 
       <div className="block">
-        {props.timestamp && (
+        {!props.hideTimestamp && (
           <span className="timestamp dosis text-sm pr-4">
-            {props.timestamp}
+            {props.entry.timestamp.format("h:mm A")}
           </span>
         )}
-        {<div dangerouslySetInnerHTML={{ __html: marked(props.content) }} />}
+        <span className="controls dosis text-sm pr-4">
+          <span className="btn" onClick={() => props.onDelete(props.entry.id)}>
+            Delete
+          </span>
+        </span>
+        {
+          <div
+            dangerouslySetInnerHTML={{ __html: marked(props.entry.contents) }}
+          />
+        }
       </div>
     </React.Fragment>
   );
