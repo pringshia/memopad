@@ -11,7 +11,7 @@ export class EntryBox extends React.Component {
     return (this.state.value.match(/\n/g) || []).length + 1;
   };
   handleKeyDown = event => {
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 && !event.shiftKey) {
       const contents = this.state.value;
       this.setState({ value: "" }, () => this.props.onSubmit(contents));
       event.preventDefault();
