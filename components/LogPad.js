@@ -20,6 +20,12 @@ export class LogPad extends React.Component {
     }
     return hash;
   };
+  handleDelete = id => {
+    console.log(id);
+    this.setState({
+      newEntries: this.state.newEntries.filter(entry => entry.id !== id)
+    });
+  };
   handleNewEntry = contents => {
     const currentTime = moment();
     this.setState({
@@ -42,20 +48,21 @@ export class LogPad extends React.Component {
         last.timestamp.format("YYYY-MM-DD hh:mm") ===
           entry.timestamp.format("YYYY-MM-DD hh:mm")
       ) {
-        nodes.push(<Block content={entry.contents} key={entry.id} />);
-      } else {
-        console.log("here", i);
         nodes.push(
           <Block
-            timestamp={entry.timestamp.format("h:mm A")}
-            content={entry.contents}
+            onDelete={this.handleDelete}
+            hideTimestamp
+            entry={entry}
             key={entry.id}
           />
+        );
+      } else {
+        nodes.push(
+          <Block onDelete={this.handleDelete} entry={entry} key={entry.id} />
         );
       }
       last = entry;
     });
-    console.log(nodes);
     return (
       <React.Fragment>
         {nodes}
