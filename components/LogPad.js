@@ -20,6 +20,23 @@ export class LogPad extends React.Component {
     }
     return hash;
   };
+  handleEdit = id => {
+    const entry = this.state.newEntries.find(entry => entry.id === id);
+    const newContents = prompt("Replace contents", entry.contents);
+
+    if (!newContents) return;
+
+    const newEntry = { ...entry, contents: newContents };
+    this.setState(
+      {
+        newEntries: this.state.newEntries.map(
+          entry => (entry.id === id ? newEntry : entry)
+        )
+      },
+      this.synchronize
+    );
+  };
+
   handleDelete = id => {
     console.log(id);
     this.setState(
@@ -83,6 +100,7 @@ export class LogPad extends React.Component {
         nodes.push(
           <Block
             onDelete={this.handleDelete}
+            onEdit={this.handleEdit}
             hideTimestamp
             entry={entry}
             key={entry.id}
@@ -90,7 +108,12 @@ export class LogPad extends React.Component {
         );
       } else {
         nodes.push(
-          <Block onDelete={this.handleDelete} entry={entry} key={entry.id} />
+          <Block
+            onDelete={this.handleDelete}
+            onEdit={this.handleEdit}
+            entry={entry}
+            key={entry.id}
+          />
         );
       }
       last = entry;
