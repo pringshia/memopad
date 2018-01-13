@@ -15,25 +15,33 @@ class Index extends React.Component {
               href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css"
               rel="stylesheet"
             />
-
-            <style jsx global>{`
-              body {
-                font: 400 20px/24px "gentium book basic", serif;
-                color: #333;
-              }
-              h1,
-              span {
-                font-family: "Dosis", sans-serif;
-              }
-              body {
-                opacity: 0;
-              }
-              .fonts-loaded body,
-              .fonts-failed body {
-                opacity: 1;
-              }
-            `}</style>
+            <link
+              href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic:400,400i,700,700i"
+              rel="stylesheet"
+            />
+            <link
+              href="https://fonts.googleapis.com/css?family=Dosis:500"
+              rel="stylesheet"
+            />
           </Head>
+          <style jsx global>{`
+            body {
+              font: 400 20px/24px "gentium book basic", serif;
+              color: #333;
+            }
+            h1,
+            span {
+              font-family: "Dosis", sans-serif;
+            }
+            body {
+              opacity: 0;
+            }
+            .fonts-loaded body,
+            .fonts-failed body {
+              opacity: 1;
+            }
+          `}</style>
+
           <h1 className="mb-6 text-4xl uppercase">Memopad</h1>
 
           <div className="mb-3">
