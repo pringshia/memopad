@@ -1,15 +1,21 @@
 export class EntryBox extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { value: "" };
   }
   handleChange = event => {
     this.setState({ value: event.target.value });
   };
   numberOfLines = () => {
     if (!this.state.value) return 1;
-    console.log(this.state.value.match(/\n/g));
     return (this.state.value.match(/\n/g) || []).length + 1;
+  };
+  handleKeyDown = event => {
+    if (event.keyCode === 13) {
+      const contents = this.state.value;
+      this.setState({ value: "" }, () => this.props.onSubmit(contents));
+      event.preventDefault();
+    }
   };
 
   render() {
@@ -39,6 +45,7 @@ export class EntryBox extends React.Component {
           rows={this.numberOfLines()}
           value={this.state.value}
           onChange={this.handleChange}
+          onKeyDown={this.handleKeyDown}
         />
       </div>
     );
