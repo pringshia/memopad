@@ -1,5 +1,6 @@
 import Block from "~/components/Block";
 import EntryBox from "~/components/EntryBox";
+import Header from "~/components/Header";
 
 import moment from "moment";
 
@@ -36,6 +37,28 @@ export class LogPad extends React.Component {
       this.synchronize
     );
   };
+  handleInsertBefore = id => {
+    const entryIndex = this.state.newEntries.findIndex(
+      entry => entry.id === id
+    );
+    const headerContents = prompt("Add a header");
+    const currentTime = moment();
+    const headerBlock = {
+      type: "header",
+      contents: headerContents,
+      timestamp: currentTime,
+      id: this.hashCode(currentTime.valueOf() + headerContents)
+    };
+    let newArray = [...this.state.newEntries];
+    newArray.splice(entryIndex, 0, headerBlock);
+    console.log(newArray);
+    this.setState(
+      {
+        newEntries: newArray
+      },
+      () => console.log(this.state)
+    );
+  };
 
   handleDelete = id => {
     console.log(id);
@@ -53,6 +76,7 @@ export class LogPad extends React.Component {
         newEntries: [
           ...this.state.newEntries,
           {
+            type: "entry",
             contents,
             timestamp: currentTime,
             id: this.hashCode(currentTime.valueOf() + contents)
@@ -75,12 +99,21 @@ export class LogPad extends React.Component {
       );
     }
   }
+  migrateData(data) {
+    return data.map(d => {
+      if (!d.type || d.type === "block") {
+        d.type = "entry";
+      }
+      return d;
+    });
+  }
   componentDidMount() {
     if (localStorage) {
-      const data = localStorage.getItem("memopad_logentriesv01");
-      if (data) {
+      const storedData = localStorage.getItem("memopad_logentriesv01");
+      if (storedData) {
+        const data = this.migrateData(JSON.parse(storedData));
         this.setState({
-          newEntries: JSON.parse(data).map(e => ({
+          newEntries: data.map(e => ({
             ...e,
             timestamp: moment(e.timestamp)
           }))
@@ -92,13 +125,17 @@ export class LogPad extends React.Component {
     let last = null,
       nodes = [];
     this.state.newEntries.forEach((entry, i) => {
-      if (
+      if (entry.type === "header") {
+        nodes.push(<Header key={entry.id}>{entry.contents}</Header>);
+      } else if (
         last &&
+        last.type === "entry" &&
         last.timestamp.format("YYYY-MM-DD hh:mm") ===
           entry.timestamp.format("YYYY-MM-DD hh:mm")
       ) {
         nodes.push(
           <Block
+            onInsertBefore={this.handleInsertBefore}
             onDelete={this.handleDelete}
             onEdit={this.handleEdit}
             hideTimestamp
@@ -109,6 +146,7 @@ export class LogPad extends React.Component {
       } else {
         nodes.push(
           <Block
+            onInsertBefore={this.handleInsertBefore}
             onDelete={this.handleDelete}
             onEdit={this.handleEdit}
             entry={entry}
