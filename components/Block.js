@@ -71,7 +71,7 @@ const Block = props => {
           vertical-align: middle;
           margin-left: 4px;
           display: inline-block;
-          animation: pop 0.2s ease-out;
+          animation: pop 0.1s ease-out;
           animation-fill-mode: backwards;
         }
         .controls .btn:nth-child(1) {
@@ -82,7 +82,7 @@ const Block = props => {
         }
 
         .timestamp {
-          animation: fadeIn 0.2s ease-out;
+          animation: fadeIn 0.1s ease-out;
         }
       `}</style>
 
