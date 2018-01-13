@@ -24,6 +24,10 @@ export class EntryBox extends React.Component {
         <style jsx>{`
           .wrapper {
             padding: 0 75px;
+
+            position: relative;
+            left: -13px;
+            top: -3px;
           }
           textarea {
             background-color: white;
