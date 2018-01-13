@@ -41,6 +41,7 @@ export class EntryBox extends React.Component {
             padding: 0px 10px;
             line-height: 30px;
             resize: none;
+            border-radius: 0;
           }
           textarea:focus {
             border-left: 3px solid orangered;
