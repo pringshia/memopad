@@ -1,6 +1,5 @@
 import Head from "next/head";
 import LoadFonts from "~/utilities/Fonts";
-import Header from "~/components/Header";
 import LogPad from "~/components/LogPad";
 
 class Index extends React.Component {
