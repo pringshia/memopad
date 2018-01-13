@@ -5,6 +5,18 @@ import Block from "~/components/Block";
 import EntryBox from "~/components/EntryBox";
 import moment from "moment";
 
+const marked = require("marked");
+marked.setOptions({
+  renderer: new marked.Renderer(),
+  gfm: true,
+  tables: true,
+  breaks: false,
+  pedantic: false,
+  sanitize: false,
+  smartLists: true,
+  smartypants: false
+});
+
 class Index extends React.Component {
   componentDidMount() {
     LoadFonts();
@@ -105,7 +117,9 @@ class Index extends React.Component {
           <Block>The ability to embed images would be cool too</Block>
           {this.state.newEntries.map((entry, idx) => (
             <Block timestamp={entry.timestamp} key={idx}>
-              {entry.contents}
+              <div
+                dangerouslySetInnerHTML={{ __html: marked(entry.contents) }}
+              />
             </Block>
           ))}
           <EntryBox onSubmit={this.handleNewEntry} />
