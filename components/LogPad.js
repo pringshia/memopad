@@ -23,7 +23,7 @@ export class LogPad extends React.Component {
   };
   handleEdit = id => {
     const entry = this.state.newEntries.find(entry => entry.id === id);
-    const newContents = prompt("Replace contents", entry.contents);
+    const newContents = prompt("Editing:", entry.contents);
 
     if (!newContents) return;
 
@@ -41,7 +41,7 @@ export class LogPad extends React.Component {
     const entryIndex = this.state.newEntries.findIndex(
       entry => entry.id === id
     );
-    const headerContents = prompt("Add a header");
+    const headerContents = prompt("Header name:");
     const currentTime = moment();
     const headerBlock = {
       type: "header",
