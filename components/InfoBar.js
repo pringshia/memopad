@@ -17,7 +17,7 @@ const InfoBar = props => {
             cursor: pointer;
           }
           :global(.tag.selected) {
-            color: red;
+            color: #0091ff;
           }
         `}
       </style>
