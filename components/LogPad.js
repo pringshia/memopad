@@ -102,7 +102,7 @@ export class LogPad extends React.Component {
   synchronize() {
     if (localStorage) {
       localStorage.setItem(
-        "memopad_logentriesv01",
+        "memopad_logentriesv01" + this.props.page,
         JSON.stringify(
           this.state.newEntries.map(e => ({
             ...e,
@@ -122,7 +122,9 @@ export class LogPad extends React.Component {
   }
   componentDidMount() {
     if (localStorage) {
-      const storedData = localStorage.getItem("memopad_logentriesv01");
+      const storedData = localStorage.getItem(
+        "memopad_logentriesv01" + this.props.page
+      );
       if (storedData) {
         const data = this.migrateData(JSON.parse(storedData));
         this.setState({
@@ -170,7 +172,9 @@ export class LogPad extends React.Component {
           entry.timestamp
         );
         if (timejump) {
-          nodes.push(<InfoBar>{timejump}</InfoBar>);
+          nodes.push(
+            <InfoBar key={this.hashCode(timejump)}>{timejump}</InfoBar>
+          );
         }
         nodes.push(
           <Block
