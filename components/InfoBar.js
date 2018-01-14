@@ -4,11 +4,11 @@ const InfoBar = props => {
       <style jsx>
         {`
           .block {
-            padding: 0px 75px;
-            margin-bottom: 10px;
+            padding: 3px 75px;
+            margin-bottom: -3px;
             position: relative;
             font-size: 10px;
-            color: #666;
+            color: #aaa;
             text-transform: uppercase;
           }
         `}

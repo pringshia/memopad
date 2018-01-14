@@ -88,6 +88,9 @@ export class LogPad extends React.Component {
     );
   };
   isBigTimeJump(prev, curr) {
+    if (prev === null) {
+      return curr.format("ddd, MMM Do");
+    }
     if (prev.isSame(curr, "day")) return null;
 
     const formatted = curr.format("ddd, MMM Do");
@@ -161,11 +164,12 @@ export class LogPad extends React.Component {
         );
         last = entry;
       } else {
-        if (last !== null && last.type !== "header") {
-          const timejump = this.isBigTimeJump(last.timestamp, entry.timestamp);
-          if (timejump) {
-            nodes.push(<InfoBar>{timejump}</InfoBar>);
-          }
+        const timejump = this.isBigTimeJump(
+          last && last.timestamp,
+          entry.timestamp
+        );
+        if (timejump) {
+          nodes.push(<InfoBar>{timejump}</InfoBar>);
         }
         nodes.push(
           <Block
