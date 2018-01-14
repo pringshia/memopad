@@ -58,38 +58,6 @@ class Index extends React.Component {
 
           <h1 className="title dosis text-4xl uppercase">Memopad</h1>
 
-          {/* <Header>Deciding the technologies</Header>
-          <Block timestamp="05:11 PM">
-            Working on building an app with{" "}
-            <a href="https://zeit.co/blog/next4">next.js</a>
-          </Block>
-          <Block>Hopefully I learn some more about SSR along the way</Block>
-
-          <Block>
-            Deployments done via zeit.co's other acclaimed product,{" "}
-            <a href="https://now.sh">now</a>
-          </Block>
-          <Block>
-            The source code is available on{" "}
-            <a href="https://github.com/pringshia/memopad">Github</a>
-          </Block>
-
-          <Block timestamp="05:11 PM">
-            Also trying out <a href="https://tailwindcss.com/">Tailwind CSS</a>
-          </Block>
-
-          <Block timestamp="12:11 PM">
-            So far feeling a bit of a learning curve and running into
-            frustration getting things pixel perfect
-          </Block>
-
-          <Header>Looking forward, thinking of requirements</Header>
-          <Block timestamp="12:11 PM">
-            I'd like to focus on the CMS-y parts of this. Need to work on a way
-            to quickly add entries.
-          </Block>
-          <Block>Going to need some sort of input area</Block>
-          <Block>The ability to embed images would be cool too</Block> */}
           <LogPad />
         </div>
       </div>
