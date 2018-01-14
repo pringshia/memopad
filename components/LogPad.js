@@ -241,7 +241,19 @@ export class LogPad extends React.Component {
     return (
       <React.Fragment>
         {nodes}
-        <EntryBox onSubmit={this.handleNewEntry} />
+        {this.state.selectedTag ? (
+          <InfoBar>
+            <span
+              className="cursor-pointer"
+              onClick={() => this.setState({ selectedTag: null })}
+            >
+              Input hidden because list is filtered. Click here to remove
+              filter.
+            </span>
+          </InfoBar>
+        ) : (
+          <EntryBox onSubmit={this.handleNewEntry} />
+        )}
       </React.Fragment>
     );
   }
