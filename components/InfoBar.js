@@ -11,6 +11,14 @@ const InfoBar = props => {
             color: #aaa;
             text-transform: uppercase;
           }
+          :global(.tag) {
+            margin-right: 10px;
+            font-size: 14px;
+            cursor: pointer;
+          }
+          :global(.tag.selected) {
+            color: red;
+          }
         `}
       </style>
       <hr />

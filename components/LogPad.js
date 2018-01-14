@@ -4,12 +4,13 @@ import Header from "~/components/Header";
 import InfoBar from "~/components/InfoBar";
 
 import moment from "moment";
+import c from "classnames";
 
 export class LogPad extends React.Component {
   constructor(props) {
     super(props);
   }
-  state = { newEntries: [] };
+  state = { newEntries: [], selectedTag: null };
   hashCode = str => {
     var hash = 0,
       i,
@@ -21,6 +22,9 @@ export class LogPad extends React.Component {
       hash |= 0; // Convert to 32bit integer
     }
     return hash;
+  };
+  toggleTagFilter = tag => {
+    this.setState({ selectedTag: this.state.selectedTag === tag ? null : tag });
   };
   handleEdit = id => {
     const entry = this.state.newEntries.find(entry => entry.id === id);
@@ -136,6 +140,9 @@ export class LogPad extends React.Component {
       }
     }
   }
+  hasHashtag = (entry, tag) => {
+    return entry.contents.indexOf(tag) >= 0;
+  };
   gatherHashTags = entries => {
     let tags = {};
     const regex = /(^|\s)([#@][a-z\d-]+)/g;
@@ -155,9 +162,27 @@ export class LogPad extends React.Component {
     return tags;
   };
   render() {
-    console.log(this.gatherHashTags(this.state.newEntries));
-    let last = null,
-      nodes = [];
+    let nodes = [];
+
+    const hashtags = this.gatherHashTags(this.state.newEntries);
+    const tags = Object.keys(hashtags);
+    if (tags.length > 0) {
+      nodes.push(
+        <InfoBar key="tags">
+          {tags.map(tag => (
+            <span
+              key={tag}
+              onClick={() => this.toggleTagFilter(tag)}
+              className={c("tag", { selected: this.state.selectedTag === tag })}
+            >
+              {tag}
+            </span>
+          ))}
+        </InfoBar>
+      );
+    }
+
+    let last = null;
     this.state.newEntries.forEach((entry, i) => {
       if (entry.type === "header") {
         nodes.push(
@@ -168,43 +193,49 @@ export class LogPad extends React.Component {
             key={entry.id}
           />
         );
-      } else if (
-        last &&
-        last.type === "entry" &&
-        last.timestamp.format("YYYY-MM-DD hh:mm") ===
-          entry.timestamp.format("YYYY-MM-DD hh:mm")
-      ) {
-        nodes.push(
-          <Block
-            onInsertBefore={this.handleInsertBefore}
-            onDelete={this.handleDelete}
-            onEdit={this.handleEdit}
-            hideTimestamp
-            entry={entry}
-            key={entry.id}
-          />
-        );
-        last = entry;
       } else {
-        const timejump = this.isBigTimeJump(
-          last && last.timestamp,
-          entry.timestamp
-        );
-        if (timejump) {
+        if (
+          this.state.selectedTag &&
+          !this.hasHashtag(entry, this.state.selectedTag)
+        ) {
+        } else if (
+          last &&
+          last.type === "entry" &&
+          last.timestamp.format("YYYY-MM-DD hh:mm") ===
+            entry.timestamp.format("YYYY-MM-DD hh:mm")
+        ) {
           nodes.push(
-            <InfoBar key={this.hashCode(timejump)}>{timejump}</InfoBar>
+            <Block
+              onInsertBefore={this.handleInsertBefore}
+              onDelete={this.handleDelete}
+              onEdit={this.handleEdit}
+              hideTimestamp
+              entry={entry}
+              key={entry.id}
+            />
           );
+          last = entry;
+        } else {
+          const timejump = this.isBigTimeJump(
+            last && last.timestamp,
+            entry.timestamp
+          );
+          if (timejump) {
+            nodes.push(
+              <InfoBar key={this.hashCode(timejump)}>{timejump}</InfoBar>
+            );
+          }
+          nodes.push(
+            <Block
+              onInsertBefore={this.handleInsertBefore}
+              onDelete={this.handleDelete}
+              onEdit={this.handleEdit}
+              entry={entry}
+              key={entry.id}
+            />
+          );
+          last = entry;
         }
-        nodes.push(
-          <Block
-            onInsertBefore={this.handleInsertBefore}
-            onDelete={this.handleDelete}
-            onEdit={this.handleEdit}
-            entry={entry}
-            key={entry.id}
-          />
-        );
-        last = entry;
       }
     });
     return (
