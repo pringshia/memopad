@@ -136,7 +136,26 @@ export class LogPad extends React.Component {
       }
     }
   }
+  gatherHashTags = entries => {
+    let tags = {};
+    const regex = /(^|\s)([#@][a-z\d-]+)/g;
+
+    entries.filter(e => e.type === "entry").forEach(entry => {
+      let matches;
+      while ((matches = regex.exec(entry.contents))) {
+        const match = matches[2];
+
+        if (tags[match]) {
+          tags[match] += 1;
+        } else {
+          tags[match] = 1;
+        }
+      }
+    });
+    return tags;
+  };
   render() {
+    console.log(this.gatherHashTags(this.state.newEntries));
     let last = null,
       nodes = [];
     this.state.newEntries.forEach((entry, i) => {
