@@ -7,6 +7,10 @@ class Index extends React.Component {
     LoadFonts();
   }
 
+  static async getInitialProps({ query }) {
+    return { page: query.page || "" };
+  }
+
   render() {
     return (
       <div>
@@ -58,7 +62,7 @@ class Index extends React.Component {
 
           <h1 className="title dosis text-4xl uppercase">Memopad</h1>
 
-          <LogPad />
+          <LogPad page={this.props.page} />
         </div>
       </div>
     );
