@@ -2,6 +2,7 @@ import Block from "~/components/Block";
 import EntryBox from "~/components/EntryBox";
 import Header from "~/components/Header";
 import InfoBar from "~/components/InfoBar";
+import DownloadIcon from "~/icons/Download";
 
 import moment from "moment";
 import c from "classnames";
@@ -103,16 +104,19 @@ export class LogPad extends React.Component {
     else if (diffHours < 48) return `${formatted} / + ${diffHours} hours`;
     else return `${formatted} / + ${curr.diff(prev, "days")} days`;
   }
+  serializedEntries() {
+    return JSON.stringify(
+      this.state.newEntries.map(e => ({
+        ...e,
+        timestamp: e.timestamp.toJSON()
+      }))
+    );
+  }
   synchronize() {
     if (localStorage) {
       localStorage.setItem(
         "memopad_logentriesv01" + this.props.page,
-        JSON.stringify(
-          this.state.newEntries.map(e => ({
-            ...e,
-            timestamp: e.timestamp.toJSON()
-          }))
-        )
+        this.serializedEntries()
       );
     }
   }
@@ -252,8 +256,36 @@ export class LogPad extends React.Component {
             </span>
           </InfoBar>
         ) : (
-          <EntryBox onSubmit={this.handleNewEntry} />
+          <React.Fragment>
+            <EntryBox onSubmit={this.handleNewEntry} />
+            {this.state.newEntries.length > 0 && (
+              <InfoBar>
+                <span
+                  className="export cursor-pointer"
+                  onClick={() => {
+                    require("js-file-download")(
+                      this.serializedEntries(),
+                      "test.json"
+                    );
+                  }}
+                >
+                  <DownloadIcon size={11} /> Export
+                </span>
+              </InfoBar>
+            )}
+          </React.Fragment>
         )}
+        <style jsx>
+          {`
+            .export {
+              margin-top: 50px;
+              display: inline-block;
+            }
+            .export :global(svg) {
+              vertical-align: text-top;
+            }
+          `}
+        </style>
       </React.Fragment>
     );
   }
