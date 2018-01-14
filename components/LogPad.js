@@ -87,6 +87,14 @@ export class LogPad extends React.Component {
       this.synchronize
     );
   };
+  isBigTimeJump(prev, curr) {
+    if (prev.isSame(curr, "day")) return null;
+
+    const formatted = curr.format("ddd, MMM Do");
+    const diffHours = curr.diff(prev, "hours");
+    if (diffHours < 48) return `${formatted} / + ${diffHours} hours`;
+    else return `${formatted} / + ${curr.diff(prev, "days")} days`;
+  }
   synchronize() {
     if (localStorage) {
       localStorage.setItem(
@@ -141,7 +149,6 @@ export class LogPad extends React.Component {
         last.timestamp.format("YYYY-MM-DD hh:mm") ===
           entry.timestamp.format("YYYY-MM-DD hh:mm")
       ) {
-        nodes.push(<InfoBar>+ 27 hours</InfoBar>);
         nodes.push(
           <Block
             onInsertBefore={this.handleInsertBefore}
@@ -152,7 +159,14 @@ export class LogPad extends React.Component {
             key={entry.id}
           />
         );
+        last = entry;
       } else {
+        if (last !== null && last.type !== "header") {
+          const timejump = this.isBigTimeJump(last.timestamp, entry.timestamp);
+          if (timejump) {
+            nodes.push(<InfoBar>{timejump}</InfoBar>);
+          }
+        }
         nodes.push(
           <Block
             onInsertBefore={this.handleInsertBefore}
@@ -162,8 +176,8 @@ export class LogPad extends React.Component {
             key={entry.id}
           />
         );
+        last = entry;
       }
-      last = entry;
     });
     return (
       <React.Fragment>
