@@ -145,7 +145,7 @@ export class LogPad extends React.Component {
   };
   gatherHashTags = entries => {
     let tags = {};
-    const regex = /(^|\s)([#@][a-z\d-]+)/g;
+    const regex = /(^|\s)(#[a-z\d-]+)/g;
 
     entries.filter(e => e.type === "entry").forEach(entry => {
       let matches;
