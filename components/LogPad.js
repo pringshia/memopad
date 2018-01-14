@@ -1,6 +1,7 @@
 import Block from "~/components/Block";
 import EntryBox from "~/components/EntryBox";
 import Header from "~/components/Header";
+import InfoBar from "~/components/InfoBar";
 
 import moment from "moment";
 
@@ -140,6 +141,7 @@ export class LogPad extends React.Component {
         last.timestamp.format("YYYY-MM-DD hh:mm") ===
           entry.timestamp.format("YYYY-MM-DD hh:mm")
       ) {
+        nodes.push(<InfoBar>+ 27 hours</InfoBar>);
         nodes.push(
           <Block
             onInsertBefore={this.handleInsertBefore}
