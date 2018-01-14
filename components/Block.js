@@ -112,7 +112,6 @@ const Block = props => {
             <EditIcon size={16} />
           </span>
         </span>
-        {/* <pre>{props.entry.type}</pre> */}
         {
           <div
             dangerouslySetInnerHTML={{
