@@ -95,7 +95,7 @@ export class LogPad extends React.Component {
 
     const formatted = curr.format("ddd, MMM Do");
     const diffHours = curr.diff(prev, "hours");
-    if (diffHours < 24) return formatted;
+    if (diffHours < 16) return formatted;
     else if (diffHours < 48) return `${formatted} / + ${diffHours} hours`;
     else return `${formatted} / + ${curr.diff(prev, "days")} days`;
   }
