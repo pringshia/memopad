@@ -57,7 +57,7 @@ export class LogPad extends React.Component {
       {
         newEntries: newArray
       },
-      () => console.log(this.state)
+      this.synchronize
     );
   };
 
