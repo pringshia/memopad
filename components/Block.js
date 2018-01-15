@@ -1,6 +1,7 @@
 import TrashIcon from "~/icons/Trash";
 import InsertIcon from "~/icons/Insert";
 import EditIcon from "~/icons/Edit";
+import c from "classnames";
 
 const marked = require("marked");
 
@@ -24,7 +25,7 @@ const Block = props => {
           margin-bottom: 10px;
           position: relative;
         }
-        .block:hover span.timestamp {
+        .block.editable:hover span.timestamp {
           display: none;
         }
         .block:hover span.controls {
@@ -86,32 +87,36 @@ const Block = props => {
         .controls .btn:nth-child(3) {
           animation-delay: 0.05s;
         }
-
         .timestamp {
           animation: fadeIn 0.1s ease-out;
         }
       `}</style>
 
-      <div className="block">
+      <div className={c("block", { editable: !props.readOnly })}>
         {!props.hideTimestamp && (
           <span className="timestamp dosis text-sm pr-4">
             {props.entry.timestamp.format("h:mm A")}
           </span>
         )}
-        <span className="controls dosis text-sm pr-4">
-          <span
-            className="btn"
-            onClick={() => props.onInsertBefore(props.entry.id)}
-          >
-            <InsertIcon size={16} />
+        {!props.readOnly && (
+          <span className="controls dosis text-sm pr-4">
+            <span
+              className="btn"
+              onClick={() => props.onInsertBefore(props.entry.id)}
+            >
+              <InsertIcon size={16} />
+            </span>
+            <span
+              className="btn"
+              onClick={() => props.onDelete(props.entry.id)}
+            >
+              <TrashIcon size={16} />
+            </span>
+            <span className="btn" onClick={() => props.onEdit(props.entry.id)}>
+              <EditIcon size={16} />
+            </span>
           </span>
-          <span className="btn" onClick={() => props.onDelete(props.entry.id)}>
-            <TrashIcon size={16} />
-          </span>
-          <span className="btn" onClick={() => props.onEdit(props.entry.id)}>
-            <EditIcon size={16} />
-          </span>
-        </span>
+        )}
         {
           <div
             dangerouslySetInnerHTML={{

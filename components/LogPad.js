@@ -195,6 +195,7 @@ export class LogPad extends React.Component {
             onEdit={this.handleEdit}
             entry={entry}
             key={entry.id}
+            readOnly={this.props.readOnly}
           />
         );
       } else {
@@ -216,6 +217,7 @@ export class LogPad extends React.Component {
               hideTimestamp
               entry={entry}
               key={entry.id}
+              readOnly={this.props.readOnly}
             />
           );
           last = entry;
@@ -236,6 +238,7 @@ export class LogPad extends React.Component {
               onEdit={this.handleEdit}
               entry={entry}
               key={entry.id}
+              readOnly={this.props.readOnly}
             />
           );
           last = entry;
@@ -245,33 +248,37 @@ export class LogPad extends React.Component {
     return (
       <React.Fragment>
         {nodes}
-        {this.state.selectedTag ? (
-          <InfoBar>
-            <span
-              className="cursor-pointer"
-              onClick={() => this.setState({ selectedTag: null })}
-            >
-              Input hidden because list is filtered. Click here to remove
-              filter.
-            </span>
-          </InfoBar>
-        ) : (
+        {!this.props.readOnly && (
           <React.Fragment>
-            <EntryBox onSubmit={this.handleNewEntry} />
-            {this.state.newEntries.length > 0 && (
+            {this.state.selectedTag ? (
               <InfoBar>
                 <span
-                  className="export cursor-pointer"
-                  onClick={() => {
-                    require("js-file-download")(
-                      this.serializedEntries(),
-                      "test.json"
-                    );
-                  }}
+                  className="cursor-pointer"
+                  onClick={() => this.setState({ selectedTag: null })}
                 >
-                  <DownloadIcon size={11} /> Export
+                  Input hidden because list is filtered. Click here to remove
+                  filter.
                 </span>
               </InfoBar>
+            ) : (
+              <React.Fragment>
+                <EntryBox onSubmit={this.handleNewEntry} />
+                {this.state.newEntries.length > 0 && (
+                  <InfoBar>
+                    <span
+                      className="export cursor-pointer"
+                      onClick={() => {
+                        require("js-file-download")(
+                          this.serializedEntries(),
+                          "test.json"
+                        );
+                      }}
+                    >
+                      <DownloadIcon size={11} /> Export
+                    </span>
+                  </InfoBar>
+                )}
+              </React.Fragment>
             )}
           </React.Fragment>
         )}
