@@ -47,7 +47,7 @@ const Wrapper = styled.div`
 
     position: relative;
     left: -13px;
-    top: -4px;
+    top: -3px;
   }
   textarea {
     background-color: white;
