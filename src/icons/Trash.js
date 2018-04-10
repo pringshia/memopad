@@ -1,3 +1,5 @@
+import React from "react";
+
 const TrashIcon = ({ size = "24" }) => {
   return (
     <svg

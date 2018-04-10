@@ -1,3 +1,6 @@
+import React from "react";
+import styled from "styled-components";
+
 export class EntryBox extends React.Component {
   constructor(props) {
     super(props);
@@ -23,31 +26,7 @@ export class EntryBox extends React.Component {
 
   render() {
     return (
-      <div className="wrapper">
-        <style jsx>{`
-          .wrapper {
-            padding: 0 75px;
-
-            position: relative;
-            left: -13px;
-            top: -3px;
-          }
-          textarea {
-            background-color: white;
-            border-left: 3px solid #ddd;
-            color: #333;
-            width: 100%;
-            box-sizing: content-box;
-            padding: 0px 10px;
-            line-height: 30px;
-            resize: none;
-            border-radius: 0;
-          }
-          textarea:focus {
-            border-left: 3px solid orangered;
-            outline: none;
-          }
-        `}</style>
+      <Wrapper>
         <textarea
           placeholder="Type something here..."
           rows={this.numberOfLines()}
@@ -55,9 +34,34 @@ export class EntryBox extends React.Component {
           onChange={this.handleChange}
           onKeyDown={this.handleKeyDown}
         />
-      </div>
+      </Wrapper>
     );
   }
 }
 
 export default EntryBox;
+
+const Wrapper = styled.div`
+  & {
+    padding: 0 75px;
+
+    position: relative;
+    left: -13px;
+    top: -4px;
+  }
+  textarea {
+    background-color: white;
+    border-left: 3px solid #ddd;
+    color: #333;
+    width: 100%;
+    box-sizing: content-box;
+    padding: 0px 10px;
+    line-height: 30px;
+    resize: none;
+    border-radius: 0;
+  }
+  textarea:focus {
+    border-left: 3px solid orangered;
+    outline: none;
+  }
+`;

@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  font: 400 18px/24px "gentium book basic", serif;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+}
+.dosis {
+  font-family: "Dosis", sans-serif;
+}
+a,
+a:visited {
+  color: #0091ff;
+}
+body {
+  padding-bottom: 75px;
+}
+/* .fonts-loaded body,
+.fonts-failed body {
+  opacity: 1;
+} */
+.title {
+  margin: 90px 75px 60px;
+}

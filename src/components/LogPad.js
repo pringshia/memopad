@@ -1,15 +1,14 @@
-import Block from "~/components/Block";
-import EntryBox from "~/components/EntryBox";
-import Header from "~/components/Header";
-import InfoBar from "~/components/InfoBar";
+import React from "react";
+
+import Block from "./Block";
+import EntryBox from "./EntryBox";
+import Header from "./Header";
+import InfoBar from "./InfoBar";
 
 import moment from "moment";
 import c from "classnames";
 
 export class LogPad extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   state = { newEntries: [], selectedTag: null };
   hashCode = str => {
     var hash = 0,
