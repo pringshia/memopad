@@ -1,8 +1,7 @@
-import Head from "next/head";
 import LoadFonts from "~/utilities/Fonts";
 import LogPad from "~/components/LogPad";
 
-class Index extends React.Component {
+class App extends React.Component {
   componentDidMount() {
     LoadFonts();
   }

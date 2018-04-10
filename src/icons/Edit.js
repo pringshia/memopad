@@ -1,4 +1,6 @@
-const InsertIcon = ({ size }) => {
+import React from "react";
+
+const EditIcon = ({ size = "24" }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,12 +12,11 @@ const InsertIcon = ({ size }) => {
       strokeWidth="1"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="feather feather-corner-up-right"
+      className="feather feather-edit-2"
     >
-      <polyline points="15 14 20 9 15 4" />
-      <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
+      <polygon points="16 3 21 8 8 21 3 21 3 16 16 3" />
     </svg>
   );
 };
 
-export default InsertIcon;
+export default EditIcon;
