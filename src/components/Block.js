@@ -20,7 +20,7 @@ marked.setOptions({
 
 const Block = props => {
   return (
-    <Wrapper>
+    <Wrapper onclick="">
       <div className="block">
         {!props.hideTimestamp && (
           <span className="timestamp dosis text-sm pr-4">
