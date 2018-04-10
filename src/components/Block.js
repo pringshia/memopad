@@ -63,7 +63,6 @@ const Wrapper = styled.div`
     padding-left: 75px;
     margin-bottom: 10px;
     position: relative;
-    cursor: pointer;
   }
   .block:hover span.timestamp {
     display: none;
