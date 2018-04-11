@@ -298,4 +298,13 @@ const Wrapper = styled.div`
   .export svg {
     vertical-align: text-top;
   }
+
+  .tag.selected {
+    color: rgb(0, 145, 255);
+  }
+  .tag {
+    margin-right: 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
 `;
