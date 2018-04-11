@@ -121,12 +121,12 @@ export class LogPad extends React.Component {
       .ref("logs")
       .set(this.serializedEntries());
 
-    if (localStorage) {
-      localStorage.setItem(
-        "memopad_logentriesv01" + this.props.page,
-        this.serializedEntries()
-      );
-    }
+    // if (localStorage) {
+    //   localStorage.setItem(
+    //     "memopad_logentriesv01" + this.props.page,
+    //     this.serializedEntries()
+    //   );
+    // }
   }
   migrateData(data) {
     return data.map(d => {
@@ -139,7 +139,6 @@ export class LogPad extends React.Component {
   componentDidMount() {
     const logsRef = firebase.database().ref("logs");
     logsRef.on("value", snapshot => {
-      console.log("got: ", JSON.parse(snapshot.val()));
       this.setState({
         newEntries: JSON.parse(snapshot.val()).map(e => ({
           ...e,
@@ -148,20 +147,20 @@ export class LogPad extends React.Component {
       });
     });
 
-    if (localStorage) {
-      const storedData = localStorage.getItem(
-        "memopad_logentriesv01" + this.props.page
-      );
-      if (storedData) {
-        const data = this.migrateData(JSON.parse(storedData));
-        this.setState({
-          newEntries: data.map(e => ({
-            ...e,
-            timestamp: moment(e.timestamp)
-          }))
-        });
-      }
-    }
+    // if (localStorage) {
+    //   const storedData = localStorage.getItem(
+    //     "memopad_logentriesv01" + this.props.page
+    //   );
+    //   if (storedData) {
+    //     const data = this.migrateData(JSON.parse(storedData));
+    //     this.setState({
+    //       newEntries: data.map(e => ({
+    //         ...e,
+    //         timestamp: moment(e.timestamp)
+    //       }))
+    //     });
+    //   }
+    // }
   }
   hasHashtag = (entry, tag) => {
     return entry.contents.indexOf(tag) >= 0;
