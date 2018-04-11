@@ -6,7 +6,7 @@ import EditIcon from "../icons/Edit";
 
 const Header = props => {
   return (
-    <Wrapper>
+    <Wrapper onClick={() => false}>
       <div className="header block dosis">
         {" "}
         <span className="controls dosis text-sm pr-4">
