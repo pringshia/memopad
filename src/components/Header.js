@@ -8,7 +8,6 @@ const Header = props => {
   return (
     <Wrapper onClick={() => false}>
       <div className="header block dosis">
-        {" "}
         <span className="controls dosis text-sm pr-4">
           <span className="btn" onClick={() => props.onDelete(props.entry.id)}>
             <TrashIcon size={16} />
