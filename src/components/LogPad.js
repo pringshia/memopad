@@ -10,6 +10,8 @@ import moment from "moment";
 import c from "classnames";
 import styled from "styled-components";
 
+import firebase from "../firebase";
+
 export class LogPad extends React.Component {
   state = { newEntries: [], selectedTag: null };
   hashCode = str => {
@@ -114,6 +116,11 @@ export class LogPad extends React.Component {
   }
 
   synchronize() {
+    firebase
+      .database()
+      .ref("logs")
+      .set(this.serializedEntries());
+
     if (localStorage) {
       localStorage.setItem(
         "memopad_logentriesv01" + this.props.page,
@@ -130,6 +137,17 @@ export class LogPad extends React.Component {
     });
   }
   componentDidMount() {
+    const logsRef = firebase.database().ref("logs");
+    logsRef.on("value", snapshot => {
+      console.log("got: ", JSON.parse(snapshot.val()));
+      this.setState({
+        newEntries: JSON.parse(snapshot.val()).map(e => ({
+          ...e,
+          timestamp: moment(e.timestamp)
+        }))
+      });
+    });
+
     if (localStorage) {
       const storedData = localStorage.getItem(
         "memopad_logentriesv01" + this.props.page
