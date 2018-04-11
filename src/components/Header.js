@@ -3,19 +3,25 @@ import styled from "styled-components";
 
 import TrashIcon from "../icons/Trash";
 import EditIcon from "../icons/Edit";
+import c from "classnames";
 
 const Header = props => {
   return (
     <Wrapper onClick={() => false}>
-      <div className="header block dosis">
-        <span className="controls dosis text-sm pr-4">
-          <span className="btn" onClick={() => props.onDelete(props.entry.id)}>
-            <TrashIcon size={16} />
+      <div className={c("header block dosis", { editable: !props.readOnly })}>
+        {!props.readOnly && (
+          <span className="controls dosis text-sm pr-4">
+            <span
+              className="btn"
+              onClick={() => props.onDelete(props.entry.id)}
+            >
+              <TrashIcon size={16} />
+            </span>
+            <span className="btn" onClick={() => props.onEdit(props.entry.id)}>
+              <EditIcon size={16} />
+            </span>
           </span>
-          <span className="btn" onClick={() => props.onEdit(props.entry.id)}>
-            <EditIcon size={16} />
-          </span>
-        </span>
+        )}
         <div className="header_name">{props.entry.contents}</div>
       </div>
     </Wrapper>

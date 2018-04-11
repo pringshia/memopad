@@ -4,9 +4,11 @@ import Block from "./Block";
 import EntryBox from "./EntryBox";
 import Header from "./Header";
 import InfoBar from "./InfoBar";
+import DownloadIcon from "../icons/Download";
 
 import moment from "moment";
 import c from "classnames";
+import styled from "styled-components";
 
 export class LogPad extends React.Component {
   state = { newEntries: [], selectedTag: null };
@@ -102,16 +104,20 @@ export class LogPad extends React.Component {
     else if (diffHours < 48) return `${formatted} / + ${diffHours} hours`;
     else return `${formatted} / + ${curr.diff(prev, "days")} days`;
   }
+  serializedEntries() {
+    return JSON.stringify(
+      this.state.newEntries.map(e => ({
+        ...e,
+        timestamp: e.timestamp.toJSON()
+      }))
+    );
+  }
+
   synchronize() {
     if (localStorage) {
       localStorage.setItem(
         "memopad_logentriesv01" + this.props.page,
-        JSON.stringify(
-          this.state.newEntries.map(e => ({
-            ...e,
-            timestamp: e.timestamp.toJSON()
-          }))
-        )
+        this.serializedEntries()
       );
     }
   }
@@ -190,6 +196,7 @@ export class LogPad extends React.Component {
             onEdit={this.handleEdit}
             entry={entry}
             key={entry.id}
+            readOnly={this.props.readOnly}
           />
         );
       } else {
@@ -211,6 +218,7 @@ export class LogPad extends React.Component {
               hideTimestamp
               entry={entry}
               key={entry.id}
+              readOnly={this.props.readOnly}
             />
           );
           last = entry;
@@ -231,6 +239,7 @@ export class LogPad extends React.Component {
               onEdit={this.handleEdit}
               entry={entry}
               key={entry.id}
+              readOnly={this.props.readOnly}
             />
           );
           last = entry;
@@ -238,24 +247,64 @@ export class LogPad extends React.Component {
       }
     });
     return (
-      <React.Fragment>
+      <Wrapper>
         {nodes}
-        {this.state.selectedTag ? (
-          <InfoBar>
-            <span
-              className="cursor-pointer"
-              onClick={() => this.setState({ selectedTag: null })}
-            >
-              Input hidden because list is filtered. Click here to remove
-              filter.
-            </span>
-          </InfoBar>
-        ) : (
-          <EntryBox onSubmit={this.handleNewEntry} />
+        {!this.props.readOnly && (
+          <React.Fragment>
+            {this.state.selectedTag ? (
+              <InfoBar>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => this.setState({ selectedTag: null })}
+                >
+                  Input hidden because list is filtered. Click here to remove
+                  filter.
+                </span>
+              </InfoBar>
+            ) : (
+              <React.Fragment>
+                <EntryBox onSubmit={this.handleNewEntry} />
+                {this.state.newEntries.length > 0 && (
+                  <InfoBar>
+                    <span
+                      className="export cursor-pointer"
+                      onClick={() => {
+                        require("js-file-download")(
+                          this.serializedEntries(),
+                          "test.json"
+                        );
+                      }}
+                    >
+                      <DownloadIcon size={11} /> Export
+                    </span>
+                  </InfoBar>
+                )}
+              </React.Fragment>
+            )}
+          </React.Fragment>
         )}
-      </React.Fragment>
+      </Wrapper>
     );
   }
 }
 
 export default LogPad;
+
+const Wrapper = styled.div`
+  .export {
+    margin-top: 50px;
+    display: inline-block;
+  }
+  .export svg {
+    vertical-align: text-top;
+  }
+
+  .tag.selected {
+    color: rgb(0, 145, 255);
+  }
+  .tag {
+    margin-right: 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+`;
