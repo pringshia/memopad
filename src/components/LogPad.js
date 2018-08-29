@@ -14,6 +14,7 @@ import firebase from "../firebase";
 
 export class LogPad extends React.Component {
   state = { newEntries: [], selectedTag: null };
+
   hashCode = str => {
     var hash = 0,
       i,
@@ -67,7 +68,7 @@ export class LogPad extends React.Component {
       this.synchronize
     );
   };
-
+  getPage = () => this.props.match.params.page || "Default";
   handleDelete = id => {
     console.log(id);
     this.setState(
@@ -118,7 +119,7 @@ export class LogPad extends React.Component {
   synchronize() {
     firebase
       .database()
-      .ref("logs")
+      .ref("logs/" + this.getPage())
       .set(this.serializedEntries());
 
     // if (localStorage) {
@@ -137,10 +138,10 @@ export class LogPad extends React.Component {
     });
   }
   componentDidMount() {
-    const logsRef = firebase.database().ref("logs");
+    const logsRef = firebase.database().ref("logs/" + this.getPage());
     logsRef.on("value", snapshot => {
       this.setState({
-        newEntries: JSON.parse(snapshot.val()).map(e => ({
+        newEntries: (JSON.parse(snapshot.val()) || []).map(e => ({
           ...e,
           timestamp: moment(e.timestamp)
         }))
