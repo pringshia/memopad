@@ -263,6 +263,19 @@ export class LogPad extends React.Component {
         }
       }
     });
+
+    if (this.state.selectedTag) {
+      // for any Headers that don't have  children, show them as subdued
+      nodes = nodes.map((node, idx, arr) => {
+        if (node.type === Header) {
+          if (idx + 1 === arr.length || arr[idx + 1].type === Header) {
+            console.log("n", node);
+            return { ...node, ...{ props: { ...node.props, subdued: true } } };
+          } else return node;
+        } else return node;
+      });
+    }
+
     return (
       <Wrapper>
         {nodes}

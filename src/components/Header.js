@@ -8,7 +8,12 @@ import c from "classnames";
 const Header = props => {
   return (
     <Wrapper onClick={() => false}>
-      <div className={c("header block dosis", { editable: !props.readOnly })}>
+      <div
+        className={c("header block dosis", {
+          editable: !props.readOnly,
+          subdued: props.subdued
+        })}
+      >
         {!props.readOnly && (
           <span className="controls dosis text-sm pr-4">
             <span
@@ -51,6 +56,9 @@ const Wrapper = styled.div`
   }
   .header:hover span.controls {
     display: block;
+  }
+  .block.header.subdued {
+    color: #ddd;
   }
   .controls {
     display: none;
