@@ -42,3 +42,14 @@ body {
 .logout:hover {
   text-decoration: underline;
 }
+
+/*OVERRIDES*/
+
+div.firebaseui-container {
+  max-width: none;
+}
+ul.firebaseui-idp-list > .firebaseui-list-item {
+  margin-bottom: 15px;
+  text-align: left;
+  margin-left: 50px;
+}

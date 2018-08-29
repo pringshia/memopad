@@ -68,7 +68,13 @@ export class LogPad extends React.Component {
       this.synchronize
     );
   };
-  getPage = () => this.props.match.params.page || "Default";
+  getPage = () => {
+    return (
+      firebase.auth().currentUser.uid +
+      "/" +
+      (this.props.match.params.page || "Default")
+    );
+  };
   handleDelete = id => {
     console.log(id);
     this.setState(

@@ -22,29 +22,27 @@ class App extends Component {
       .onAuthStateChanged(user => this.setState({ isSignedIn: !!user }));
   }
   render() {
-    if (this.state.isSignedIn === null) {
-      return null;
-    }
-    if (!this.state.isSignedIn) {
-      return (
-        <StyledFirebaseAuth
-          uiConfig={this.uiConfig}
-          firebaseAuth={firebase.auth()}
-        />
-      );
-    }
     return (
       <div className="p-8 pt-16">
         <h1 className="title dosis text-4xl uppercase">Memopad</h1>
-        <a
-          className="dosis text-xs uppercase cursor-pointer logout"
-          onClick={() => firebase.auth().signOut()}
-        >
-          Log out
-        </a>
-        <Router>
-          <Route path="/:page?" component={LogPad} />
-        </Router>
+        {this.state.isSignedIn === null ? null : !this.state.isSignedIn ? (
+          <StyledFirebaseAuth
+            uiConfig={this.uiConfig}
+            firebaseAuth={firebase.auth()}
+          />
+        ) : (
+          <React.Fragment>
+            <a
+              className="dosis text-xs uppercase cursor-pointer logout"
+              onClick={() => firebase.auth().signOut()}
+            >
+              Log out
+            </a>
+            <Router>
+              <Route path="/:page?" component={LogPad} />
+            </Router>
+          </React.Fragment>
+        )}
       </div>
     );
   }
