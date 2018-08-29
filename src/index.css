@@ -26,3 +26,30 @@ body {
 .title {
   margin: 90px 75px 60px;
 }
+
+.logout {
+  position: fixed;
+  top: 0px;
+  right: 75px;
+  padding: 10px 20px;
+  z-index: 5;
+
+  /* background-color: #f1f1f1;
+  border: 1px solid #e8e8e8;
+  border-top: 0px; */
+}
+
+.logout:hover {
+  text-decoration: underline;
+}
+
+/*OVERRIDES*/
+
+div.firebaseui-container {
+  max-width: none;
+}
+ul.firebaseui-idp-list > .firebaseui-list-item {
+  margin-bottom: 15px;
+  text-align: left;
+  margin-left: 50px;
+}
