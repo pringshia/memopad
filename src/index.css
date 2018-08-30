@@ -29,19 +29,34 @@ body {
   font-weight: 700;
 }
 
-.logout {
+.navbar {
   position: fixed;
   top: 0px;
-  right: 75px;
-  padding: 10px 20px;
+  left: 0px;
+  padding: 4px 15px;
   z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  width: 100vw;
+  box-sizing: border-box;
+  text-align: right;
 
-  /* background-color: #f1f1f1;
+  background-color: #f1f1f1;
   border: 1px solid #e8e8e8;
-  border-top: 0px; */
+  border-top: 0px;
 }
 
-.logout:hover {
+.navbar .logo {
+  font-weight: 700;
+  text-decoration: none;
+  color: #333;
+}
+
+.navbar a {
+  color: #888;
+}
+
+.navbar a:hover {
   text-decoration: underline;
 }
 

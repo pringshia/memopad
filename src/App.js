@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import LogPad from "./components/LogPad";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import firebase from "./firebase";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
@@ -31,17 +31,22 @@ class App extends Component {
             firebaseAuth={firebase.auth()}
           />
         ) : (
-          <React.Fragment>
-            <a
-              className="dosis text-xs uppercase cursor-pointer logout"
-              onClick={() => firebase.auth().signOut()}
-            >
-              Log out
-            </a>
-            <Router>
+          <Router>
+            <React.Fragment>
+              <div className="dosis text-xs uppercase navbar">
+                <Link to="/" className="logo">
+                  M
+                </Link>
+                <a
+                  className="cursor-pointer"
+                  onClick={() => firebase.auth().signOut()}
+                >
+                  Log out
+                </a>
+              </div>
               <Route path="/:page?" component={LogPad} />
-            </Router>
-          </React.Fragment>
+            </React.Fragment>
+          </Router>
         )}
       </div>
     );
