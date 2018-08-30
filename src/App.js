@@ -23,7 +23,7 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="p-8 pt-16">
+      <div className="pl-2 pr-2 sm:p-8 sm:pt-16 pt-16">
         <h1 className="title dosis text-4xl uppercase">Memopad</h1>
         {this.state.isSignedIn === null ? null : !this.state.isSignedIn ? (
           <StyledFirebaseAuth
