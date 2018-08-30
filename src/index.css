@@ -11,6 +11,7 @@ body {
 }
 .dosis {
   font-family: "Dosis", sans-serif;
+  font-weight: 500;
 }
 a,
 a:visited {
@@ -25,6 +26,7 @@ body {
 } */
 .title {
   margin: 90px 75px 60px;
+  font-weight: 700;
 }
 
 .logout {
