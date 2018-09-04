@@ -60,7 +60,6 @@ export class LogPad extends React.Component {
     };
     let newArray = [...this.state.newEntries];
     newArray.splice(entryIndex, 0, headerBlock);
-    console.log(newArray);
     this.setState(
       {
         newEntries: newArray
@@ -70,13 +69,11 @@ export class LogPad extends React.Component {
   };
   getPage = () => {
     return (
-      firebase.auth().currentUser.uid +
-      "/" +
+      (this.props.public ? "" : firebase.auth().currentUser.uid + "/") +
       (this.props.match.params.page || "Default")
     );
   };
   handleDelete = id => {
-    console.log(id);
     this.setState(
       {
         newEntries: this.state.newEntries.filter(entry => entry.id !== id)
@@ -276,7 +273,6 @@ export class LogPad extends React.Component {
       nodes = nodes.map((node, idx, arr) => {
         if (node.type === Header) {
           if (idx + 1 === arr.length || arr[idx + 1].type === Header) {
-            console.log("n", node);
             return { ...node, ...{ props: { ...node.props, subdued: true } } };
           } else return node;
         } else return node;

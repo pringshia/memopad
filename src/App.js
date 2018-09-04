@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import LogPad from "./components/LogPad";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import firebase from "./firebase";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
@@ -44,7 +44,14 @@ class App extends Component {
                   Log out
                 </a>
               </div>
-              <Route path="/:page?" component={LogPad} />
+              <Switch>
+                <Route
+                  exact
+                  path="/public/:page?"
+                  render={props => <LogPad public readOnly {...props} />}
+                />
+                <Route exact path="/:page?" component={LogPad} />
+              </Switch>
             </React.Fragment>
           </Router>
         )}
