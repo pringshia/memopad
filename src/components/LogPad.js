@@ -51,6 +51,7 @@ export class LogPad extends React.Component {
       entry => entry.id === id
     );
     const headerContents = prompt("Header name:");
+    if (!headerContents) return;
     const currentTime = moment();
     const headerBlock = {
       type: "header",

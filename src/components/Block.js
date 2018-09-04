@@ -32,18 +32,18 @@ const Block = props => {
           <span className="controls dosis text-sm pr-4">
             <span
               className="btn"
-              onClick={() => props.onInsertBefore(props.entry.id)}
-            >
-              <InsertIcon size={16} />
-            </span>
-            <span
-              className="btn"
               onClick={() => props.onDelete(props.entry.id)}
             >
               <TrashIcon size={16} />
             </span>
             <span className="btn" onClick={() => props.onEdit(props.entry.id)}>
               <EditIcon size={16} />
+            </span>
+            <span
+              className="btn"
+              onClick={() => props.onInsertBefore(props.entry.id)}
+            >
+              <InsertIcon size={16} />
             </span>
           </span>
         )}
