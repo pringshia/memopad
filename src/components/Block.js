@@ -49,6 +49,7 @@ const Block = props => {
         )}
         {
           <div
+            style={{ paddingRight: 75 }}
             dangerouslySetInnerHTML={{
               __html: marked(props.entry.contents) || "&nbsp;"
             }}

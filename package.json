@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "autosize": "^4.0.2",
     "classnames": "^2.2.5",
     "firebase": "5",
     "js-file-download": "^0.4.1",

@@ -1,10 +1,15 @@
 import React from "react";
 import styled from "styled-components";
+import autosize from "autosize";
 
 export class EntryBox extends React.Component {
   constructor(props) {
     super(props);
     this.state = { value: "" };
+  }
+  componentDidMount() {
+    this.inputRef.focus();
+    autosize(this.inputRef);
   }
   handleChange = event => {
     this.setState({ value: event.target.value });
@@ -16,10 +21,10 @@ export class EntryBox extends React.Component {
   handleKeyDown = event => {
     if (event.keyCode === 13 && !event.shiftKey) {
       const contents = this.state.value;
-      this.setState(
-        { value: "" },
-        () => contents && this.props.onSubmit(contents)
-      );
+      this.setState({ value: "" }, () => {
+        autosize.update(this.inputRef);
+        contents && this.props.onSubmit(contents);
+      });
       event.preventDefault();
     }
   };
@@ -29,7 +34,8 @@ export class EntryBox extends React.Component {
       <Wrapper>
         <textarea
           placeholder="Type something here..."
-          rows={this.numberOfLines()}
+          ref={ref => (this.inputRef = ref)}
+          rows={1}
           value={this.state.value}
           onChange={this.handleChange}
           onKeyDown={this.handleKeyDown}
@@ -55,8 +61,8 @@ const Wrapper = styled.div`
     color: #333;
     width: 100%;
     box-sizing: content-box;
-    padding: 0px 10px;
-    line-height: 30px;
+    padding: 3px 10px;
+    line-height: 24px;
     resize: none;
     border-radius: 0;
   }
