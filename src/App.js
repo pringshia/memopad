@@ -26,10 +26,26 @@ class App extends Component {
       <div className="pl-2 pr-2 sm:p-8 sm:pt-16 pt-16">
         <h1 className="title dosis text-4xl uppercase">Memopad</h1>
         {this.state.isSignedIn === null ? null : !this.state.isSignedIn ? (
-          <StyledFirebaseAuth
-            uiConfig={this.uiConfig}
-            firebaseAuth={firebase.auth()}
-          />
+          <React.Fragment>
+            <h3
+              style={{
+                margin: "10px 20px 40px 75px",
+                fontSize: 45,
+                fontWeight: "normal",
+                fontStyle: "italic",
+                lineHeight: 1.2,
+                color: "#999"
+              }}
+            >
+              Jotting down your stream-of-consciousness
+              <br />
+              made easy.
+            </h3>
+            <StyledFirebaseAuth
+              uiConfig={this.uiConfig}
+              firebaseAuth={firebase.auth()}
+            />
+          </React.Fragment>
         ) : (
           <Router>
             <React.Fragment>

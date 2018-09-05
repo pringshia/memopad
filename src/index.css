@@ -70,3 +70,33 @@ ul.firebaseui-idp-list > .firebaseui-list-item {
   text-align: left;
   margin-left: 50px;
 }
+
+button.mdl-button--raised.firebaseui-idp-google,
+button.mdl-button--raised.firebaseui-idp-google:active,
+button.mdl-button--raised.firebaseui-idp-google:focus,
+button.mdl-button--raised.firebaseui-idp-google:focus:not(:active) {
+  box-shadow: none;
+  background-color: #f3fbff;
+}
+
+button.mdl-button--raised {
+  padding: 0px;
+  margin: 0;
+  height: auto;
+  line-height: 1em;
+  min-height: auto;
+  min-width: auto;
+  width: auto;
+  border: 1px solid #0079ff;
+  padding: 10px 15px;
+  border-radius: 3px;
+  color: #0079ff;
+}
+
+button.mdl-button--raised:hover {
+  background-color: #dcf2ff;
+}
+
+.firebaseui-idp-google > span.firebaseui-idp-text {
+  color: #0079ff;
+}
