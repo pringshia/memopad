@@ -29,6 +29,11 @@ body {
   font-weight: 700;
 }
 
+.title a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
 .navbar {
   position: fixed;
   top: 0px;
