@@ -11,9 +11,10 @@ import c from "classnames";
 import styled from "styled-components";
 
 import firebase from "../firebase";
+import { Link } from "react-router-dom";
 
 export class LogPad extends React.Component {
-  state = { newEntries: [], selectedTag: null };
+  state = { newEntries: [], selectedTag: null, newPage: null };
 
   hashCode = str => {
     var hash = 0,
@@ -68,10 +69,11 @@ export class LogPad extends React.Component {
       this.synchronize
     );
   };
-  getPage = () => {
+  getPage = () => this.props.match.params.page || "Default";
+  getPagePath = () => {
     return (
       (this.props.public ? "" : firebase.auth().currentUser.uid + "/") +
-      (this.props.match.params.page || "Default")
+      this.getPage()
     );
   };
   handleDelete = id => {
@@ -123,7 +125,7 @@ export class LogPad extends React.Component {
   synchronize() {
     firebase
       .database()
-      .ref("logs/" + this.getPage())
+      .ref("logs/" + this.getPagePath())
       .set(this.serializedEntries());
 
     // if (localStorage) {
@@ -142,31 +144,37 @@ export class LogPad extends React.Component {
     });
   }
   componentDidMount() {
-    const logsRef = firebase.database().ref("logs/" + this.getPage());
-    logsRef.on("value", snapshot => {
-      this.setState({
-        newEntries: (JSON.parse(snapshot.val()) || []).map(e => ({
-          ...e,
-          timestamp: moment(e.timestamp)
-        }))
+    firebase
+      .database()
+      .ref("pages/" + this.getPagePath())
+      .on("value", snapshot => {
+        if (!snapshot.val()) {
+          this.setState({ newPage: true });
+        } else {
+          this.setState({ title: snapshot.val() });
+          const logsRef = firebase.database().ref("logs/" + this.getPagePath());
+          logsRef.on("value", snapshot => {
+            this.setState({
+              newEntries: (JSON.parse(snapshot.val()) || []).map(e => ({
+                ...e,
+                timestamp: moment(e.timestamp)
+              })),
+              newPage: false
+            });
+          });
+        }
       });
-    });
-
-    // if (localStorage) {
-    //   const storedData = localStorage.getItem(
-    //     "memopad_logentriesv01" + this.props.page
-    //   );
-    //   if (storedData) {
-    //     const data = this.migrateData(JSON.parse(storedData));
-    //     this.setState({
-    //       newEntries: data.map(e => ({
-    //         ...e,
-    //         timestamp: moment(e.timestamp)
-    //       }))
-    //     });
-    //   }
-    // }
   }
+
+  handlePageName = name => {
+    firebase
+      .database()
+      .ref("pages/" + this.getPagePath())
+      .set(name ? name : this.getPage());
+
+    this.setState({ newPage: false });
+  };
+
   hasHashtag = (entry, tag) => {
     return entry.contents.indexOf(tag) >= 0;
   };
@@ -281,43 +289,66 @@ export class LogPad extends React.Component {
     }
 
     return (
-      <Wrapper>
-        {nodes}
-        {!this.props.readOnly && (
-          <React.Fragment>
-            {this.state.selectedTag ? (
-              <InfoBar>
-                <span
-                  className="cursor-pointer"
-                  onClick={() => this.setState({ selectedTag: null })}
-                >
-                  Input hidden because list is filtered. Click here to remove
-                  filter.
-                </span>
-              </InfoBar>
-            ) : (
+      <React.Fragment>
+        <h1 className="title dosis text-4xl uppercase">
+          <Link to="/">Memopad</Link>{" "}
+          {this.state.title && (
+            <span class="subtitle">/ {this.state.title}</span>
+          )}
+        </h1>
+
+        {this.state.newPage === null ? null : this.state.newPage === true ? (
+          <Wrapper>
+            <EntryBox
+              fontSize={25}
+              allowEmptySubmissions={true}
+              placeholder={`Enter a title for this new page...\nOr just hit enter to call it '${this.getPage()}'`}
+              onSubmit={this.handlePageName}
+            />
+          </Wrapper>
+        ) : (
+          <Wrapper>
+            {nodes}
+            {!this.props.readOnly && (
               <React.Fragment>
-                <EntryBox onSubmit={this.handleNewEntry} />
-                {this.state.newEntries.length > 0 && (
+                {this.state.selectedTag ? (
                   <InfoBar>
                     <span
-                      className="export cursor-pointer"
-                      onClick={() => {
-                        require("js-file-download")(
-                          this.serializedEntries(),
-                          "test.json"
-                        );
-                      }}
+                      className="cursor-pointer"
+                      onClick={() => this.setState({ selectedTag: null })}
                     >
-                      <DownloadIcon size={11} /> Export
+                      Input hidden because list is filtered. Click here to
+                      remove filter.
                     </span>
                   </InfoBar>
+                ) : (
+                  <React.Fragment>
+                    <EntryBox
+                      placeholder="Type something here..."
+                      onSubmit={this.handleNewEntry}
+                    />
+                    {this.state.newEntries.length > 0 && (
+                      <InfoBar>
+                        <span
+                          className="export cursor-pointer"
+                          onClick={() => {
+                            require("js-file-download")(
+                              this.serializedEntries(),
+                              "test.json"
+                            );
+                          }}
+                        >
+                          <DownloadIcon size={11} /> Export
+                        </span>
+                      </InfoBar>
+                    )}
+                  </React.Fragment>
                 )}
               </React.Fragment>
             )}
-          </React.Fragment>
+          </Wrapper>
         )}
-      </Wrapper>
+      </React.Fragment>
     );
   }
 }

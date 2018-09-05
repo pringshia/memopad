@@ -20,13 +20,18 @@ class LogList extends React.Component {
 
   render() {
     return (
-      <Wrapper>
-        {Object.entries(this.state.notes).map(([id, name]) => (
-          <ListItem key={id}>
-            <Link to={"/" + id}>{name}</Link>
-          </ListItem>
-        ))}
-      </Wrapper>
+      <React.Fragment>
+        <h1 className="title dosis text-4xl uppercase">
+          <Link to="/">Memopad</Link>
+        </h1>
+        <Wrapper>
+          {Object.entries(this.state.notes).map(([id, name]) => (
+            <ListItem key={id}>
+              <Link to={"/" + id}>{name}</Link>
+            </ListItem>
+          ))}
+        </Wrapper>
+      </React.Fragment>
     );
   }
 }

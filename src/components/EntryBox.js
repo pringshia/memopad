@@ -19,11 +19,16 @@ export class EntryBox extends React.Component {
     return (this.state.value.match(/\n/g) || []).length + 1;
   };
   handleKeyDown = event => {
+    const { allowEmptySubmissions = false } = this.props;
     if (event.keyCode === 13 && !event.shiftKey) {
       const contents = this.state.value;
       this.setState({ value: "" }, () => {
         autosize.update(this.inputRef);
-        contents && this.props.onSubmit(contents);
+        if (allowEmptySubmissions) {
+          this.props.onSubmit(contents);
+        } else if (contents) {
+          this.props.onSubmit(contents);
+        }
       });
       event.preventDefault();
     }
@@ -33,7 +38,8 @@ export class EntryBox extends React.Component {
     return (
       <Wrapper>
         <textarea
-          placeholder="Type something here..."
+          style={{ fontSize: this.props.fontSize || "inherit" }}
+          placeholder={this.props.placeholder || "Type something here..."}
           ref={ref => (this.inputRef = ref)}
           rows={1}
           value={this.state.value}
@@ -62,7 +68,7 @@ const Wrapper = styled.div`
     width: 100%;
     box-sizing: content-box;
     padding: 3px 10px;
-    line-height: 24px;
+    line-height: 1.3em;
     resize: none;
     border-radius: 0;
   }
