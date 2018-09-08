@@ -293,7 +293,7 @@ export class LogPad extends React.Component {
         <h1 className="title dosis text-4xl uppercase">
           <Link to="/">Memopad</Link>{" "}
           {this.state.title && (
-            <span class="subtitle">/ {this.state.title}</span>
+            <span className="subtitle">/ {this.state.title}</span>
           )}
         </h1>
 

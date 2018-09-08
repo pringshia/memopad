@@ -1,9 +1,16 @@
 import React, { Component } from "react";
 import LogPad from "./components/LogPad";
 import LogList from "./components/LogList";
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Redirect
+} from "react-router-dom";
 import firebase from "./firebase";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import moment from "moment";
 
 class App extends Component {
   state = { isSignedIn: null };
@@ -71,6 +78,13 @@ class App extends Component {
                   exact
                   path="/public/:page?"
                   render={props => <LogPad public readOnly {...props} />}
+                />
+                <Route
+                  exact
+                  path="/today"
+                  render={() => (
+                    <Redirect to={"/" + moment().format("YYYY-MM-DD")} />
+                  )}
                 />
                 <Route exact path="/" component={LogList} />
                 <Route exact path="/:page" component={LogPad} />
