@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import firebase from "../firebase";
 import { Link } from "react-router-dom";
+import moment from "moment";
 
 class LogList extends React.Component {
   state = { notes: {} };
@@ -24,11 +25,15 @@ class LogList extends React.Component {
           <Link to="/">Memopad</Link>
         </h1>
         <Wrapper>
-          {Object.entries(this.state.notes).map(([id, details]) => (
-            <ListItem key={id}>
-              <Link to={"/" + id}>{details.title}</Link>
-            </ListItem>
-          ))}
+          {Object.entries(this.state.notes)
+            .sort(
+              ([_, a], [__, b]) => moment(b.createdAt) - moment(a.createdAt)
+            )
+            .map(([id, details]) => (
+              <ListItem key={id}>
+                <Link to={"/" + id}>{details.title}</Link>
+              </ListItem>
+            ))}
         </Wrapper>
       </React.Fragment>
     );
