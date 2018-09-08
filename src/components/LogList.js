@@ -11,7 +11,6 @@ class LogList extends React.Component {
       .database()
       .ref("pages/" + firebase.auth().currentUser.uid);
     logsRef.on("value", snapshot => {
-      console.log(snapshot);
       this.setState({
         notes: snapshot.val()
       });
