@@ -63,9 +63,27 @@ class App extends Component {
               </Route>
               <Route
                 exact
-                path="/public/:page?"
-                render={props => <LogPad public readOnly {...props} />}
+                path="/public/:page"
+                render={props => (
+                  <LogPad
+                    userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
+                    readOnly
+                    {...props}
+                  />
+                )}
               />
+              <Route
+                exact
+                path="/:userId/:page"
+                render={props => (
+                  <LogPad
+                    userId={props.match.params.userId}
+                    readOnly
+                    {...props}
+                  />
+                )}
+              />
+              <Route render={() => <Redirect to="/" />} />
             </Switch>
           ) : (
             <React.Fragment>
@@ -83,8 +101,25 @@ class App extends Component {
               <Switch>
                 <Route
                   exact
-                  path="/public/:page?"
-                  render={props => <LogPad public readOnly {...props} />}
+                  path="/public/:page"
+                  render={props => (
+                    <LogPad
+                      userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
+                      readOnly
+                      {...props}
+                    />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/:userId/:page"
+                  render={props => (
+                    <LogPad
+                      userId={props.match.params.userId}
+                      readOnly
+                      {...props}
+                    />
+                  )}
                 />
                 <Route
                   exact

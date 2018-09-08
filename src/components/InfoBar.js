@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-const InfoBar = props => {
+const InfoBar = ({ children, ...props }) => {
   return (
-    <Wrapper>
+    <Wrapper {...props}>
       <hr />
-      <div className="info block dosis">{props.children}</div>
+      <div className="info block dosis">{children}</div>
     </Wrapper>
   );
 };

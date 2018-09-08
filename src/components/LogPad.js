@@ -72,8 +72,9 @@ export class LogPad extends React.Component {
   getPage = () => this.props.match.params.page || "Default";
   getPagePath = () => {
     return (
-      (this.props.public ? "public/" : firebase.auth().currentUser.uid + "/") +
-      this.getPage()
+      (this.props.userId
+        ? this.props.userId + "/"
+        : firebase.auth().currentUser.uid + "/") + this.getPage()
     );
   };
   handleDelete = id => {
@@ -207,7 +208,7 @@ export class LogPad extends React.Component {
     const tags = Object.keys(hashtags);
     if (tags.length > 0) {
       nodes.push(
-        <InfoBar key="tags">
+        <InfoBar key="tags" className="tags-bar">
           {tags.map(tag => (
             <span
               key={tag}

@@ -71,6 +71,19 @@ body {
   text-decoration: underline;
 }
 
+.tags-bar {
+  /* border-bottom: 1px solid #eaeaea; */
+  margin-bottom: 60px;
+  margin-top: -40px;
+}
+
+.tag {
+  background-color: #f4f4f4;
+  padding: 3px 5px;
+  border-radius: 3px;
+  user-select: none;
+}
+
 /*OVERRIDES*/
 
 div.firebaseui-container {
