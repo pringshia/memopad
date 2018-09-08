@@ -72,7 +72,7 @@ export class LogPad extends React.Component {
   getPage = () => this.props.match.params.page || "Default";
   getPagePath = () => {
     return (
-      (this.props.public ? "" : firebase.auth().currentUser.uid + "/") +
+      (this.props.public ? "public/" : firebase.auth().currentUser.uid + "/") +
       this.getPage()
     );
   };
@@ -148,10 +148,11 @@ export class LogPad extends React.Component {
       .database()
       .ref("pages/" + this.getPagePath())
       .on("value", snapshot => {
-        if (!snapshot.val()) {
+        const pageDetails = snapshot.val();
+        if (!pageDetails) {
           this.setState({ newPage: true });
         } else {
-          this.setState({ title: snapshot.val() });
+          this.setState({ title: pageDetails.title });
           const logsRef = firebase.database().ref("logs/" + this.getPagePath());
           logsRef.on("value", snapshot => {
             this.setState({
@@ -170,7 +171,10 @@ export class LogPad extends React.Component {
     firebase
       .database()
       .ref("pages/" + this.getPagePath())
-      .set(name ? name : this.getPage());
+      .set({
+        title: name ? name : this.getPage(),
+        createdAt: moment().format()
+      });
 
     this.setState({ newPage: false });
   };

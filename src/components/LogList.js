@@ -25,9 +25,9 @@ class LogList extends React.Component {
           <Link to="/">Memopad</Link>
         </h1>
         <Wrapper>
-          {Object.entries(this.state.notes).map(([id, name]) => (
+          {Object.entries(this.state.notes).map(([id, details]) => (
             <ListItem key={id}>
-              <Link to={"/" + id}>{name}</Link>
+              <Link to={"/" + id}>{details.title}</Link>
             </ListItem>
           ))}
         </Wrapper>
