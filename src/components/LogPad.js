@@ -6,102 +6,17 @@ import Header from "./Header";
 import InfoBar from "./InfoBar";
 import DownloadIcon from "../icons/Download";
 
-import moment from "moment";
 import c from "classnames";
 import styled from "styled-components";
-
-import firebase from "../firebase";
-import { Link } from "react-router-dom";
+import { serializeEntries } from "../utils";
 
 export class LogPad extends React.Component {
-  state = { newEntries: [], selectedTag: null, newPage: null };
+  state = { selectedTag: null };
 
-  hashCode = str => {
-    var hash = 0,
-      i,
-      chr;
-    if (str.length === 0) return hash;
-    for (i = 0; i < str.length; i++) {
-      chr = str.charCodeAt(i);
-      hash = (hash << 5) - hash + chr;
-      hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-  };
   toggleTagFilter = tag => {
     this.setState({ selectedTag: this.state.selectedTag === tag ? null : tag });
   };
-  handleEdit = id => {
-    const entry = this.state.newEntries.find(entry => entry.id === id);
-    const newContents = prompt("Editing:", entry.contents);
 
-    if (!newContents) return;
-
-    const newEntry = { ...entry, contents: newContents };
-    this.setState(
-      {
-        newEntries: this.state.newEntries.map(
-          entry => (entry.id === id ? newEntry : entry)
-        )
-      },
-      this.synchronize
-    );
-  };
-  handleInsertBefore = id => {
-    const entryIndex = this.state.newEntries.findIndex(
-      entry => entry.id === id
-    );
-    const headerContents = prompt("Header name:");
-    if (!headerContents) return;
-    const currentTime = moment();
-    const headerBlock = {
-      type: "header",
-      contents: headerContents,
-      timestamp: currentTime,
-      id: this.hashCode(currentTime.valueOf() + headerContents)
-    };
-    let newArray = [...this.state.newEntries];
-    newArray.splice(entryIndex, 0, headerBlock);
-    this.setState(
-      {
-        newEntries: newArray
-      },
-      this.synchronize
-    );
-  };
-  getPage = () => this.props.match.params.page || "Default";
-  getPagePath = () => {
-    return (
-      (this.props.userId
-        ? this.props.userId + "/"
-        : firebase.auth().currentUser.uid + "/") + this.getPage()
-    );
-  };
-  handleDelete = id => {
-    this.setState(
-      {
-        newEntries: this.state.newEntries.filter(entry => entry.id !== id)
-      },
-      this.synchronize
-    );
-  };
-  handleNewEntry = contents => {
-    const currentTime = moment();
-    this.setState(
-      {
-        newEntries: [
-          ...this.state.newEntries,
-          {
-            type: "entry",
-            contents,
-            timestamp: currentTime,
-            id: this.hashCode(currentTime.valueOf() + contents)
-          }
-        ]
-      },
-      this.synchronize
-    );
-  };
   isBigTimeJump(prev, curr) {
     if (prev === null) {
       return curr.format("ddd, MMM Do");
@@ -114,28 +29,7 @@ export class LogPad extends React.Component {
     else if (diffHours < 48) return `${formatted} / + ${diffHours} hours`;
     else return `${formatted} / + ${curr.diff(prev, "days")} days`;
   }
-  serializedEntries() {
-    return JSON.stringify(
-      this.state.newEntries.map(e => ({
-        ...e,
-        timestamp: e.timestamp.toJSON()
-      }))
-    );
-  }
 
-  synchronize() {
-    firebase
-      .database()
-      .ref("logs/" + this.getPagePath())
-      .set(this.serializedEntries());
-
-    // if (localStorage) {
-    //   localStorage.setItem(
-    //     "memopad_logentriesv01" + this.props.page,
-    //     this.serializedEntries()
-    //   );
-    // }
-  }
   migrateData(data) {
     return data.map(d => {
       if (!d.type || d.type === "block") {
@@ -144,41 +38,6 @@ export class LogPad extends React.Component {
       return d;
     });
   }
-  componentDidMount() {
-    firebase
-      .database()
-      .ref("pages/" + this.getPagePath())
-      .on("value", snapshot => {
-        const pageDetails = snapshot.val();
-        if (!pageDetails) {
-          this.setState({ newPage: true });
-        } else {
-          this.setState({ title: pageDetails.title });
-          const logsRef = firebase.database().ref("logs/" + this.getPagePath());
-          logsRef.on("value", snapshot => {
-            this.setState({
-              newEntries: (JSON.parse(snapshot.val()) || []).map(e => ({
-                ...e,
-                timestamp: moment(e.timestamp)
-              })),
-              newPage: false
-            });
-          });
-        }
-      });
-  }
-
-  handlePageName = name => {
-    firebase
-      .database()
-      .ref("pages/" + this.getPagePath())
-      .set({
-        title: name ? name : this.getPage(),
-        createdAt: moment().format()
-      });
-
-    this.setState({ newPage: false });
-  };
 
   hasHashtag = (entry, tag) => {
     return entry.contents.indexOf(tag) >= 0;
@@ -201,10 +60,17 @@ export class LogPad extends React.Component {
     });
     return tags;
   };
+
+  handleImport = event => {
+    const fileData = new FileReader();
+    fileData.onloadend = e => this.props.onImport(e.target.result);
+    fileData.readAsText(event.target.files[0]);
+  };
+
   render() {
     let nodes = [];
 
-    const hashtags = this.gatherHashTags(this.state.newEntries);
+    const hashtags = this.gatherHashTags(this.props.entries);
     const tags = Object.keys(hashtags);
     if (tags.length > 0) {
       nodes.push(
@@ -223,12 +89,12 @@ export class LogPad extends React.Component {
     }
 
     let last = null;
-    this.state.newEntries.forEach((entry, i) => {
+    this.props.entries.forEach((entry, i) => {
       if (entry.type === "header") {
         nodes.push(
           <Header
-            onDelete={this.handleDelete}
-            onEdit={this.handleEdit}
+            onDelete={this.props.onDelete}
+            onEdit={this.props.onEdit}
             entry={entry}
             key={entry.id}
             readOnly={this.props.readOnly}
@@ -247,9 +113,9 @@ export class LogPad extends React.Component {
         ) {
           nodes.push(
             <Block
-              onInsertBefore={this.handleInsertBefore}
-              onDelete={this.handleDelete}
-              onEdit={this.handleEdit}
+              onInsertBefore={this.props.onInsertBefore}
+              onDelete={this.props.onDelete}
+              onEdit={this.props.onEdit}
               hideTimestamp
               entry={entry}
               key={entry.id}
@@ -263,15 +129,13 @@ export class LogPad extends React.Component {
             entry.timestamp
           );
           if (timejump) {
-            nodes.push(
-              <InfoBar key={this.hashCode(timejump)}>{timejump}</InfoBar>
-            );
+            nodes.push(<InfoBar key={timejump}>{timejump}</InfoBar>);
           }
           nodes.push(
             <Block
-              onInsertBefore={this.handleInsertBefore}
-              onDelete={this.handleDelete}
-              onEdit={this.handleEdit}
+              onInsertBefore={this.props.onInsertBefore}
+              onDelete={this.props.onDelete}
+              onEdit={this.props.onEdit}
               entry={entry}
               key={entry.id}
               readOnly={this.props.readOnly}
@@ -295,64 +159,62 @@ export class LogPad extends React.Component {
 
     return (
       <React.Fragment>
-        <h1 className="title dosis text-4xl uppercase">
-          <Link to="/">Memopad</Link>{" "}
-          {this.state.title && (
-            <span className="subtitle">/ {this.state.title}</span>
-          )}
-        </h1>
-
-        {this.state.newPage === null ? null : this.state.newPage === true ? (
-          <Wrapper>
-            <EntryBox
-              fontSize={25}
-              allowEmptySubmissions={true}
-              placeholder={`Enter a title for this new page...\nOr just hit enter to call it '${this.getPage()}'`}
-              onSubmit={this.handlePageName}
-            />
-          </Wrapper>
-        ) : (
-          <Wrapper>
-            {nodes}
-            {!this.props.readOnly && (
-              <React.Fragment>
-                {this.state.selectedTag ? (
-                  <InfoBar>
-                    <span
-                      className="cursor-pointer"
-                      onClick={() => this.setState({ selectedTag: null })}
-                    >
-                      Input hidden because list is filtered. Click here to
-                      remove filter.
-                    </span>
-                  </InfoBar>
-                ) : (
-                  <React.Fragment>
-                    <EntryBox
-                      placeholder="Type something here..."
-                      onSubmit={this.handleNewEntry}
-                    />
-                    {this.state.newEntries.length > 0 && (
-                      <InfoBar>
-                        <span
-                          className="export cursor-pointer"
-                          onClick={() => {
-                            require("js-file-download")(
-                              this.serializedEntries(),
-                              "test.json"
-                            );
-                          }}
-                        >
-                          <DownloadIcon size={11} /> Export
+        <Wrapper>
+          {nodes}
+          {!this.props.readOnly && (
+            <React.Fragment>
+              {this.state.selectedTag ? (
+                <InfoBar>
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => this.setState({ selectedTag: null })}
+                  >
+                    Input hidden because list is filtered. Click here to remove
+                    filter.
+                  </span>
+                </InfoBar>
+              ) : (
+                <React.Fragment>
+                  <EntryBox
+                    placeholder="Type something here..."
+                    onSubmit={this.props.onNewEntry}
+                  />
+                  {this.props.entries.length > 0 && (
+                    <InfoBar>
+                      <span
+                        className="export cursor-pointer"
+                        onClick={() => {
+                          require("js-file-download")(
+                            serializeEntries(this.props.entries),
+                            (this.props.title || "download") + ".json"
+                          );
+                        }}
+                      >
+                        <DownloadIcon size={11} /> Export
+                      </span>
+                      <label htmlFor="import-data">
+                        <span className="export cursor-pointer">
+                          <DownloadIcon size={11} /> Import
                         </span>
-                      </InfoBar>
-                    )}
-                  </React.Fragment>
-                )}
-              </React.Fragment>
-            )}
-          </Wrapper>
-        )}
+                      </label>
+                      <input
+                        type="file"
+                        name="import-data"
+                        id="import-data"
+                        style={{
+                          opacity: 0,
+                          position: "absolute",
+                          zIndex: -1
+                        }}
+                        onChange={this.handleImport}
+                      />
+                    </InfoBar>
+                  )}
+                </React.Fragment>
+              )}
+            </React.Fragment>
+          )}
+        </Wrapper>
       </React.Fragment>
     );
   }
@@ -363,6 +225,7 @@ export default LogPad;
 const Wrapper = styled.div`
   .export {
     margin-top: 50px;
+    margin-right: 20px;
     display: inline-block;
   }
   .export svg {

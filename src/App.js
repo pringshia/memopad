@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import LogPad from "./components/LogPad";
+import FirebaseLogPad from "./components/FirebaseLogPad";
 import LogList from "./components/LogList";
 import {
   BrowserRouter as Router,
@@ -65,7 +65,7 @@ class App extends Component {
                 exact
                 path="/public/:page"
                 render={props => (
-                  <LogPad
+                  <FirebaseLogPad
                     userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
                     readOnly
                     {...props}
@@ -76,7 +76,7 @@ class App extends Component {
                 exact
                 path="/:userId/:page"
                 render={props => (
-                  <LogPad
+                  <FirebaseLogPad
                     userId={props.match.params.userId}
                     readOnly
                     {...props}
@@ -103,7 +103,7 @@ class App extends Component {
                   exact
                   path="/public/:page"
                   render={props => (
-                    <LogPad
+                    <FirebaseLogPad
                       userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
                       readOnly
                       {...props}
@@ -114,7 +114,7 @@ class App extends Component {
                   exact
                   path="/:userId/:page"
                   render={props => (
-                    <LogPad
+                    <FirebaseLogPad
                       userId={props.match.params.userId}
                       readOnly
                       {...props}
@@ -129,7 +129,7 @@ class App extends Component {
                   )}
                 />
                 <Route exact path="/" component={LogList} />
-                <Route exact path="/:page" component={LogPad} />
+                <Route exact path="/:page" component={FirebaseLogPad} />
               </Switch>
             </React.Fragment>
           )}
