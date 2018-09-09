@@ -15,9 +15,9 @@ export class EntryBox extends React.Component {
   handleEnter = e => {
     var key = e.which || e.keyCode;
     if (key === 13) {
-      setTimeout(() => this.inputRef.focus(), 0);
+      setTimeout(() => this.inputRef && this.inputRef.focus(), 0);
     } else if (key === 27) {
-      this.inputRef.blur();
+      this.inputRef && this.inputRef.blur();
     }
   };
   componentWillUnmount() {
