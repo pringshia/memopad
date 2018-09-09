@@ -8,8 +8,20 @@ export class EntryBox extends React.Component {
     this.state = { value: "" };
   }
   componentDidMount() {
-    this.inputRef.focus();
     autosize(this.inputRef);
+
+    document.addEventListener("keydown", this.handleEnter);
+  }
+  handleEnter = e => {
+    var key = e.which || e.keyCode;
+    if (key === 13) {
+      setTimeout(() => this.inputRef.focus(), 0);
+    } else if (key === 27) {
+      this.inputRef.blur();
+    }
+  };
+  componentWillUnmount() {
+    document.removeEventListener("keypress", this.handleEnter);
   }
   handleChange = event => {
     this.setState({ value: event.target.value });
