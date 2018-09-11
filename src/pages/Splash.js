@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { Link } from "react-router-dom";
 import firebase from "../firebase";
+import styled from "styled-components";
 
 class Splash extends Component {
   uiConfig = {
@@ -13,6 +14,7 @@ class Splash extends Component {
       signInSuccessWithAuthResult: () => false
     }
   };
+  state = { email: "" };
   render() {
     return (
       <React.Fragment>
@@ -34,57 +36,83 @@ class Splash extends Component {
           <br />
           made easy.
         </h3>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <AuthWrapper>
           <div style={{ marginTop: 20 }}>
             <StyledFirebaseAuth
               uiConfig={this.uiConfig}
               firebaseAuth={firebase.auth()}
             />
           </div>
-          <div
-            style={{
-              fontStyle: "italic",
-              width: 70,
-              textAlign: "center",
-              color: "#888",
-              marginTop: 20
-            }}
-          >
-            &mdash; or &mdash;
-          </div>
+          <div className="or-separator">&mdash; or &mdash;</div>
 
           <div style={{ marginLeft: 24 }}>
             <div style={{ fontSize: 15 }}>
               Have a log-in link sent to your email:
             </div>
-            <input
-              style={{
-                fontSize: 16,
-                border: "1px solid #999",
-                padding: "10px 14px",
-                borderRadius: 4
-              }}
-            />
-            <button
-              style={{
-                border: "1px solid #0079ff",
-                backgroundColor: "#f3fbff",
-                color: "#0079ff",
-                borderRadius: 4,
-                fontFamily: "Roboto,Helvetica,Arial,sans-serif",
-                fontWeight: 500,
-                fontSize: 14,
-                padding: 11,
-                marginLeft: 10
+            <form
+              onSubmit={e => {
+                alert(this.state.email);
+                e.preventDefault();
               }}
             >
-              Send Email
-            </button>
+              <input
+                style={{
+                  fontSize: 16,
+                  border: "1px solid #999",
+                  padding: "10px 14px",
+                  borderRadius: 4
+                }}
+                value={this.state.email}
+                onChange={e => this.setState({ email: e.target.value })}
+              />
+              <button type="submit" className="send-email">
+                Send Email
+              </button>
+            </form>
           </div>
-        </div>
+        </AuthWrapper>
       </React.Fragment>
     );
   }
 }
 
 export default Splash;
+
+const AuthWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 50px;
+
+  @media (max-width: 768px) {
+    & {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    div.or-separator {
+      margin: 0px 0px 10px 24px;
+      width: 175px;
+      text-align: center;
+    }
+  }
+
+  .or-separator {
+    font-style: italic;
+    width: 70px;
+    text-align: center;
+    color: #888;
+    margin-top: 20px;
+  }
+
+  .send-email {
+    border: 1px solid #0079ff;
+    background-color: #f3fbff;
+    color: #0079ff;
+    border-radius: 4px;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 11px;
+    margin-left: 10px;
+  }
+`;
