@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import FirebaseLogPad from "./components/FirebaseLogPad";
 import LogList from "./components/LogList";
+import EmailAuth from "./components/EmailAuth";
 import Splash from "./pages/Splash";
 import {
   BrowserRouter as Router,
@@ -26,6 +27,11 @@ class App extends Component {
         <div className="pl-2 pr-2 sm:p-8 sm:pt-16 pt-16">
           {this.state.isSignedIn === null ? null : !this.state.isSignedIn ? (
             <Switch>
+              <Route
+                exact
+                path="/writings_app_auth_endpoint"
+                component={EmailAuth}
+              />
               <Route exact path="/" component={Splash} />
               <Route
                 exact
@@ -95,6 +101,12 @@ class App extends Component {
                   )}
                 />
                 <Route exact path="/" component={LogList} />
+                <Route
+                  exact
+                  path="/writings_app_auth_endpoint"
+                  render={() => <Redirect to="/" />}
+                />
+
                 <Route exact path="/:page" component={FirebaseLogPad} />
               </Switch>
             </React.Fragment>

@@ -14,7 +14,45 @@ class Splash extends Component {
       signInSuccessWithAuthResult: () => false
     }
   };
+
+  actionCodeSettings = {
+    // URL you want to redirect back to. The domain (www.example.com) for this
+    // URL must be whitelisted in the Firebase Console.
+    url: "http://localhost:3000" + "/writings_app_auth_endpoint",
+    // This must be true.
+    handleCodeInApp: true
+    // iOS: {
+    //   bundleId: "com.example.ios"
+    // },
+    // android: {
+    //   packageName: "com.example.android",
+    //   installApp: true,
+    //   minimumVersion: "12"
+    // }
+  };
+
   state = { email: "" };
+
+  handleSubmit = e => {
+    const email = this.state.email;
+    firebase
+      .auth()
+      .sendSignInLinkToEmail(email, this.actionCodeSettings)
+      .then(function() {
+        // The link was successfully sent. Inform the user.
+        // Save the email locally so you don't need to ask the user for it again
+        // if they open the link on the same device.
+        window.localStorage.setItem("emailForSignIn", email);
+        alert("Email sent!");
+      })
+      .catch(function(error) {
+        console.error(error);
+        // Some error occurred, you can inspect the code: error.code
+      });
+
+    e.preventDefault();
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -49,12 +87,7 @@ class Splash extends Component {
             <div style={{ fontSize: 15 }}>
               Have a log-in link sent to your email:
             </div>
-            <form
-              onSubmit={e => {
-                alert(this.state.email);
-                e.preventDefault();
-              }}
-            >
+            <form onSubmit={this.handleSubmit}>
               <input
                 style={{
                   fontSize: 16,
