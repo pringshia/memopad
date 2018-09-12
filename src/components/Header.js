@@ -44,6 +44,7 @@ const Wrapper = styled.div`
   .header_name {
     border-bottom: 1px dotted #ddd;
     padding-bottom: 4px;
+    font-weight: bold;
   }
 
   .block {
