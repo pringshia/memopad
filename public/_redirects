@@ -1,2 +1,4 @@
 https://daily.writings.app/* https://writings.app/today 301!
+https://edge.daily.writings.app/* https://edge.writings.app/today 301!
 https://writings.app/*    /index.html   200
+https://edge.writings.app/*    /index.html   200
