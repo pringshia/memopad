@@ -15,10 +15,16 @@ class Splash extends Component {
     }
   };
 
+  getRootUrl = () =>
+    window.location.protocol +
+    "//" +
+    window.location.hostname +
+    (window.location.port ? ":" + window.location.port : "");
+
   actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be whitelisted in the Firebase Console.
-    url: "http://localhost:3000" + "/writings_app_auth_endpoint",
+    url: this.getRootUrl() + "/writings_app_auth_endpoint",
     // This must be true.
     handleCodeInApp: true
     // iOS: {
