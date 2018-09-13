@@ -7,27 +7,37 @@ import firebase from "../firebase";
 import { serializeEntries, deserializeEntries } from "../utils";
 
 export default class FirebaseLogPad extends React.Component {
-  state = { entries: [], selectedTag: null, newPage: null };
+  state = { entries: [], selectedTag: null, newPage: null, unauthorized: null };
 
   componentDidMount() {
     firebase
       .database()
       .ref("pages/" + this.getPagePath())
-      .on("value", snapshot => {
-        const pageDetails = snapshot.val();
-        if (!pageDetails) {
-          this.setState({ newPage: true });
-        } else {
-          this.setState({ title: pageDetails.title });
-          const logsRef = firebase.database().ref("logs/" + this.getPagePath());
-          logsRef.on("value", snapshot => {
-            this.setState({
-              entries: deserializeEntries(snapshot.val()),
-              newPage: false
+      .on(
+        "value",
+        snapshot => {
+          const pageDetails = snapshot.val();
+          if (!pageDetails) {
+            this.setState({ newPage: true });
+          } else {
+            this.setState({ title: pageDetails.title });
+            const logsRef = firebase
+              .database()
+              .ref("logs/" + this.getPagePath());
+            logsRef.on("value", snapshot => {
+              this.setState({
+                entries: deserializeEntries(snapshot.val()),
+                newPage: false
+              });
             });
-          });
+          }
+        },
+        error => {
+          if (error.code === "PERMISSION_DENIED") {
+            this.setState({ unauthorized: true });
+          }
         }
-      });
+      );
   }
 
   synchronize() {
@@ -154,23 +164,32 @@ export default class FirebaseLogPad extends React.Component {
             <span className="subtitle">/ {this.state.title}</span>
           )}
         </h1>
-        {this.state.newPage === null ? null : this.state.newPage === true ? (
-          <NewLogPad
-            {...this.props}
-            defaultPageName={this.getPage()}
-            onPageName={this.handlePageName}
-          />
+        {this.state.unauthorized === true ? (
+          <h3 style={{ marginLeft: 75 }}>
+            You do not have permissions to view this page.
+          </h3>
         ) : (
-          <LogPad
-            readOnly={this.props.readOnly}
-            title={this.state.title}
-            entries={this.state.entries}
-            onInsertBefore={this.handleInsertBefore}
-            onDelete={this.handleDelete}
-            onEdit={this.handleEdit}
-            onNewEntry={this.handleNewEntry}
-            onImport={this.handleImport}
-          />
+          <div>
+            {this.state.newPage === null ? null : this.state.newPage ===
+            true ? (
+              <NewLogPad
+                {...this.props}
+                defaultPageName={this.getPage()}
+                onPageName={this.handlePageName}
+              />
+            ) : (
+              <LogPad
+                readOnly={this.props.readOnly}
+                title={this.state.title}
+                entries={this.state.entries}
+                onInsertBefore={this.handleInsertBefore}
+                onDelete={this.handleDelete}
+                onEdit={this.handleEdit}
+                onNewEntry={this.handleNewEntry}
+                onImport={this.handleImport}
+              />
+            )}
+          </div>
         )}
       </React.Fragment>
     );
