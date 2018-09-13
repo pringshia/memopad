@@ -134,12 +134,6 @@ const Wrapper = styled.div`
     animation-delay: 0.05s;
   }
 
-  code {
-    font-size: 16px;
-    background-color: #f1f1f1;
-    padding: 2px 4px;
-  }
-
   .timestamp {
     animation: fadeIn 0.1s ease-out;
   }

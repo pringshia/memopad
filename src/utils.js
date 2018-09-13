@@ -15,3 +15,9 @@ export function deserializeEntries(jsonString) {
     timestamp: moment(e.timestamp)
   }));
 }
+
+export const getRootUrl = () =>
+  window.location.protocol +
+  "//" +
+  window.location.hostname +
+  (window.location.port ? ":" + window.location.port : "");

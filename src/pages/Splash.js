@@ -3,6 +3,7 @@ import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { Link } from "react-router-dom";
 import firebase from "../firebase";
 import styled from "styled-components";
+import { getRootUrl } from "../utils";
 
 class Splash extends Component {
   uiConfig = {
@@ -15,16 +16,10 @@ class Splash extends Component {
     }
   };
 
-  getRootUrl = () =>
-    window.location.protocol +
-    "//" +
-    window.location.hostname +
-    (window.location.port ? ":" + window.location.port : "");
-
   actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be whitelisted in the Firebase Console.
-    url: this.getRootUrl() + "/writings_app_auth_endpoint",
+    url: getRootUrl() + "/writings_app_auth_endpoint",
     // This must be true.
     handleCodeInApp: true
     // iOS: {

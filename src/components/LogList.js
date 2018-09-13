@@ -3,6 +3,7 @@ import styled from "styled-components";
 import firebase from "../firebase";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { getRootUrl } from "../utils";
 
 class LogList extends React.Component {
   state = { notes: {}, loaded: false };
@@ -13,7 +14,7 @@ class LogList extends React.Component {
       .ref("pages/" + firebase.auth().currentUser.uid);
     logsRef.on("value", snapshot => {
       this.setState({
-        notes: snapshot.val(),
+        notes: snapshot.val() || {},
         loaded: true
       });
     });
@@ -59,7 +60,19 @@ class LogList extends React.Component {
         <Wrapper>
           {this.state.loaded &&
             Object.entries(this.state.notes).length === 0 && (
-              <span>You do not have any notes yet.</span>
+              <div>
+                <p>You do not have any notes yet.</p>
+                <p>
+                  Create one by visiting any URL, e.g. type in{" "}
+                  <code>
+                    <Link to={"/TodaysNotes"}>
+                      {getRootUrl()}
+                      /TodaysNotes
+                    </Link>
+                  </code>
+                  in the address bar.
+                </p>
+              </div>
             )}
           {Object.entries(this.state.notes)
             .sort(
