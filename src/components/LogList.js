@@ -67,6 +67,19 @@ class LogList extends React.Component {
           <Link to="/">Memopad</Link>
         </h1>
         <Wrapper>
+          <NewSheet>
+            <div class="note-name">
+              <InputControl>
+                <label className="dosis">Title</label>
+                <input />
+              </InputControl>
+              <InputControl>
+                <label className="dosis">URL</label>
+                <input />
+              </InputControl>
+            </div>
+            <button className="btn compact">New Sheet</button>
+          </NewSheet>
           {this.state.loaded &&
             Object.entries(this.state.notes).length === 0 && (
               <div>
@@ -142,6 +155,11 @@ export default LogList;
 
 const Wrapper = styled.div`
   padding: 0 75px;
+
+  .note-name {
+    width: 400px;
+    display: inline-block;
+  }
 `;
 
 const ListItem = styled.div`
@@ -163,18 +181,13 @@ const ListItem = styled.div`
     }
   }
 
-  .note-name {
-    width: 400px;
-    display: inline-block;
-  }
-
   .note-controls {
     // display: none;
     white-space: nowrap;
   }
 
   button {
-    margin: 0 10px;
+    margin: 0 10px 0 0;
     font-size: 14px;
   }
 
@@ -200,4 +213,26 @@ const ListItem = styled.div`
   button.secondary {
     color: #999;
   }
+`;
+
+const NewSheet = styled.div`
+  input {
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    margin-bottom: 50px;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  label {
+    position: absolute;
+    bottom: 100%;
+    font-size: 13px;
+  }
+`;
+
+const InputControl = styled.div`
+  display: inline-block;
+  position: relative;
 `;

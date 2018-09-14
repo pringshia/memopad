@@ -99,7 +99,7 @@ class Splash extends Component {
                 value={this.state.email}
                 onChange={e => this.setState({ email: e.target.value })}
               />
-              <button type="submit" className="send-email">
+              <button type="submit" className="send-email btn">
                 Send Email
               </button>
             </form>
@@ -139,14 +139,6 @@ const AuthWrapper = styled.div`
   }
 
   .send-email {
-    border: 1px solid #0079ff;
-    background-color: #f3fbff;
-    color: #0079ff;
-    border-radius: 4px;
-    font-family: Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    padding: 11px;
     margin-left: 10px;
   }
 `;
