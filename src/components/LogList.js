@@ -51,6 +51,15 @@ class LogList extends React.Component {
       .set(false);
   };
 
+  handleRename = id => () => {
+    const newTitle = prompt("What would you like to rename the sheet to?");
+    if (!newTitle) return;
+    firebase
+      .database()
+      .ref("pages/" + firebase.auth().currentUser.uid + "/" + id + "/title")
+      .set(newTitle);
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -84,6 +93,12 @@ class LogList extends React.Component {
                   <Link to={"/" + id}>{details.title}</Link>
                 </span>
                 <span className="note-controls">
+                  <button
+                    className="dosis secondary"
+                    onClick={this.handleRename(id)}
+                  >
+                    Rename
+                  </button>
                   <button
                     className="dosis danger"
                     onClick={this.handleDelete(id)}
