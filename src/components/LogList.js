@@ -180,6 +180,7 @@ const ListItem = styled.div`
 
   .permalink {
     font-size: 11px;
+    line-height: 1em;
     color: #333;
     text-transform: uppercase;
     border-bottom: 1px solid black;
