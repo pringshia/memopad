@@ -86,7 +86,7 @@ class Splash extends Component {
 
           <div style={{ marginLeft: 24 }}>
             <div style={{ fontSize: 15 }}>
-              Have a log-in link sent to your email:
+              Have an instant login link sent to your email:
             </div>
             <form onSubmit={this.handleSubmit}>
               <input
