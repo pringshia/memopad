@@ -170,6 +170,7 @@ const ListItem = styled.div`
 
   .note-controls {
     // display: none;
+    white-space: nowrap;
   }
 
   button {
