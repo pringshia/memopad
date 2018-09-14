@@ -94,16 +94,16 @@ class LogList extends React.Component {
                 </span>
                 <span className="note-controls">
                   <button
-                    className="dosis secondary"
-                    onClick={this.handleRename(id)}
-                  >
-                    Rename
-                  </button>
-                  <button
                     className="dosis danger"
                     onClick={this.handleDelete(id)}
                   >
                     Delete
+                  </button>
+                  <button
+                    className="dosis secondary"
+                    onClick={this.handleRename(id)}
+                  >
+                    Rename
                   </button>
 
                   {details.isPublic ? (
