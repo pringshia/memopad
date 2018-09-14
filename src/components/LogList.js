@@ -78,7 +78,7 @@ class LogList extends React.Component {
                 <input />
               </InputControl>
             </div>
-            <button className="btn compact">New Sheet</button>
+            <button className="main-btn compact">New Sheet</button>
           </NewSheet>
           {this.state.loaded &&
             Object.entries(this.state.notes).length === 0 && (

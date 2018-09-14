@@ -99,7 +99,7 @@ class Splash extends Component {
                 value={this.state.email}
                 onChange={e => this.setState({ email: e.target.value })}
               />
-              <button type="submit" className="send-email btn">
+              <button type="submit" className="send-email main-btn">
                 Send Email
               </button>
             </form>

@@ -90,7 +90,7 @@ code {
   padding: 2px 4px;
 }
 
-.btn {
+.main-btn {
   border: 1px solid #0079ff;
   background-color: #f3fbff;
   color: #0079ff;
@@ -101,7 +101,7 @@ code {
   padding: 11px;
 }
 
-.btn.compact {
+.main-btn.compact {
   padding: 6px;
   font-size: 13px;
 }
