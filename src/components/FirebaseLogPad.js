@@ -108,7 +108,10 @@ class FirebaseLogPad extends React.Component {
         })
     );
 
-    transition("Sheet.Loaded", { title: name ? name : this.getPage() });
+    transition("Sheet.Loaded", {
+      title: name ? name : this.getPage(),
+      entries: []
+    });
 
     ////
     // this.setState({ newPage: false });

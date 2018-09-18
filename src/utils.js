@@ -15,10 +15,13 @@ export function deserializeEntries(jsonString) {
 }
 
 export function convertTimestamps(entries) {
-  return entries.map(e => ({
-    ...e,
-    timestamp: moment(e.timestamp)
-  }));
+  return (
+    entries &&
+    entries.map(e => ({
+      ...e,
+      timestamp: moment(e.timestamp)
+    }))
+  );
 }
 
 export const getRootUrl = () =>
