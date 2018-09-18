@@ -271,7 +271,7 @@ class FirebaseLogPad extends React.Component {
         </h1>
         <States
           of="Sheet"
-          Unknown={() => null}
+          Unknown={() => <div class="spinner" />}
           Unauthorized={() => (
             <h3 style={{ marginLeft: 75 }}>
               You do not have permissions to view this page.

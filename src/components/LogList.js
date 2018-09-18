@@ -91,7 +91,7 @@ class LogList extends React.Component {
         <Wrapper>
           <States
             of="List"
-            Unknown={() => null}
+            Unknown={() => <div class="spinner" />}
             Loaded={({ data }) => (
               <React.Fragment>
                 {Object.entries(data).length === 0 && (
