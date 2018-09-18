@@ -32,12 +32,19 @@ const AuthDetection = withMachine(
   class extends Component {
     componentDidMount() {
       const { transition, external } = this.props;
-      external("firebase auth detection", () =>
-        firebase.auth().onAuthStateChanged(user => {
-          !!user ? transition("Auth.SignedIn") : transition("Auth.SignedOut");
-        })
-      );
+      external("firebase auth detection", () => {
+        this.unregisterAuthObserver = firebase
+          .auth()
+          .onAuthStateChanged(user => {
+            !!user ? transition("Auth.SignedIn") : transition("Auth.SignedOut");
+          });
+      });
       // .onAuthStateChanged(user => this.setState({ isSignedIn: !!user }));
+    }
+    componentWillUnmount() {
+      if (this.unregisterAuthObserver) {
+        this.unregisterAuthObserver();
+      }
     }
     render() {
       return null;

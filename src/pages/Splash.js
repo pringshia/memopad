@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 import firebase from "../firebase";
 import styled from "styled-components";
 import { getRootUrl } from "../utils";
+import ErrorBoundary from "../components/ErrorBoundary";
+import { withMachine } from "machinate";
+
+import "../firebase-ui.css";
 
 class Splash extends Component {
   uiConfig = {
@@ -54,7 +58,12 @@ class Splash extends Component {
     e.preventDefault();
   };
 
+  // componentWillUnmount() {
+  //   this.unregisterAuthObserver();
+  // }
+
   render() {
+    const { External } = this.props;
     return (
       <React.Fragment>
         <h1 className="title dosis text-4xl uppercase">
@@ -77,10 +86,17 @@ class Splash extends Component {
         </h3>
         <AuthWrapper>
           <div style={{ marginTop: 20 }}>
-            <StyledFirebaseAuth
-              uiConfig={this.uiConfig}
-              firebaseAuth={firebase.auth()}
-            />
+            <ErrorBoundary>
+              <External
+                name="firebase auth"
+                fallback={<FallbackFirebaseAuthButton />}
+              >
+                <StyledFirebaseAuth
+                  uiConfig={this.uiConfig}
+                  firebaseAuth={firebase.auth()}
+                />
+              </External>
+            </ErrorBoundary>
           </div>
           <div className="or-separator">&mdash; or &mdash;</div>
 
@@ -110,7 +126,7 @@ class Splash extends Component {
   }
 }
 
-export default Splash;
+export default withMachine(Splash);
 
 const AuthWrapper = styled.div`
   display: flex;
@@ -150,3 +166,38 @@ const AuthWrapper = styled.div`
     margin-left: 10px;
   }
 `;
+
+const FallbackFirebaseAuthButton = () => (
+  <div id="firebaseui_container" lang="en">
+    <div className="firebaseui-container firebaseui-page-provider-sign-in firebaseui-id-page-provider-sign-in firebaseui-use-spinner">
+      <div className="firebaseui-card-content">
+        <form onsubmit="return false;">
+          <ul className="firebaseui-idp-list">
+            <li className="firebaseui-list-item">
+              <button
+                className="firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button"
+                data-provider-id="google.com"
+                data-upgraded=",MaterialButton"
+              >
+                <span className="firebaseui-idp-icon-wrapper">
+                  <img
+                    className="firebaseui-idp-icon"
+                    alt=""
+                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                  />
+                </span>
+                <span className="firebaseui-idp-text firebaseui-idp-text-long">
+                  Sign in with Google
+                </span>
+                <span className="firebaseui-idp-text firebaseui-idp-text-short">
+                  Google
+                </span>
+              </button>
+            </li>
+          </ul>
+        </form>
+      </div>
+      <div className="firebaseui-card-footer firebaseui-provider-sign-in-footer" />
+    </div>
+  </div>
+);
