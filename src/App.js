@@ -12,65 +12,137 @@ import {
 } from "react-router-dom";
 import firebase from "./firebase";
 import moment from "moment";
+import { Machinate, Transition, withMachine, States } from "machinate";
+import { Inspector } from "machinate-plugins-inspector";
+
+const scheme = {
+  Auth: ["SignedIn", "SignedOut", "Unknown"],
+  Display: {
+    states: ["List", "Sheet", "Unknown"],
+    deps: { "Auth.SignedIn": "Unknown" }
+  },
+  List: { states: ["Loaded", "Unknown"], deps: { "Display.List": "Unknown" } },
+  Sheet: {
+    states: ["Loaded", "New", "Unauthorized", "Unknown"],
+    deps: { "Display.Sheet": "Unknown" }
+  }
+};
+
+const AuthDetection = withMachine(
+  class extends Component {
+    componentDidMount() {
+      const { transition, external } = this.props;
+      external("firebase auth detection", () =>
+        firebase.auth().onAuthStateChanged(user => {
+          !!user ? transition("Auth.SignedIn") : transition("Auth.SignedOut");
+        })
+      );
+      // .onAuthStateChanged(user => this.setState({ isSignedIn: !!user }));
+    }
+    render() {
+      return null;
+    }
+  }
+);
 
 class App extends Component {
-  state = { isSignedIn: null };
-
-  componentDidMount() {
-    this.registerAuthObserver = firebase
-      .auth()
-      .onAuthStateChanged(user => this.setState({ isSignedIn: !!user }));
-  }
   render() {
+    const { Transition, External, lastForceTime } = this.props;
+
     return (
       <Router>
         <div className="pl-2 pr-2 sm:p-8 sm:pt-16 pt-16">
-          {this.state.isSignedIn === null ? null : !this.state.isSignedIn ? (
-            <Switch>
-              <Route
-                exact
-                path="/writings_app_auth_endpoint"
-                component={EmailAuth}
-              />
-              <Route exact path="/" component={Splash} />
-              <Route
-                exact
-                path="/public/:page"
-                render={props => (
-                  <FirebaseLogPad
-                    userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
-                    readOnly
-                    {...props}
+          <Inspector />
+
+          <States
+            of="Auth"
+            SignedIn={() => (
+              <React.Fragment>
+                <div className="dosis text-xs uppercase navbar">
+                  <Link to="/" className="logo">
+                    M
+                  </Link>
+                  <a
+                    className="cursor-pointer"
+                    onClick={() => firebase.auth().signOut()}
+                  >
+                    Log out
+                  </a>
+                </div>
+                <Switch>
+                  <Route
+                    exact
+                    path="/public/:page"
+                    render={props => (
+                      <FirebaseLogPad
+                        userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
+                        readOnly
+                        {...props}
+                      />
+                    )}
                   />
-                )}
-              />
-              <Route
-                exact
-                path="/:userId/:page"
-                render={props => (
-                  <FirebaseLogPad
-                    userId={props.match.params.userId}
-                    readOnly
-                    {...props}
+                  <Route
+                    exact
+                    path="/:userId/:page"
+                    render={props => (
+                      <FirebaseLogPad
+                        userId={props.match.params.userId}
+                        readOnly
+                        {...props}
+                      />
+                    )}
                   />
-                )}
-              />
-              <Route render={() => <Redirect to="/" />} />
-            </Switch>
-          ) : (
-            <React.Fragment>
-              <div className="dosis text-xs uppercase navbar">
-                <Link to="/" className="logo">
-                  M
-                </Link>
-                <a
-                  className="cursor-pointer"
-                  onClick={() => firebase.auth().signOut()}
-                >
-                  Log out
-                </a>
-              </div>
+                  <Route
+                    exact
+                    path="/today"
+                    render={() => (
+                      <Redirect to={"/" + moment().format("YYYY-MM-DD")} />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/"
+                    render={props => (
+                      <External name="router-change">
+                        <Transition to="Display.List" />
+                      </External>
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/writings_app_auth_endpoint"
+                    render={() => <Redirect to="/" />}
+                  />
+
+                  <Route
+                    exact
+                    path="/:page"
+                    render={props => (
+                      <External name="router-change">
+                        <Transition
+                          to="Display.Sheet"
+                          data={props.match.params}
+                        />
+                      </External>
+                    )}
+                  />
+                </Switch>
+                <States
+                  of="Display"
+                  Unknown={() => null}
+                  Sheet={({ data }) => <FirebaseLogPad params={data} />}
+                  List={({ data }) => <LogList params={data} />}
+                />
+              </React.Fragment>
+            )}
+            SignedOut={() => (
               <Switch>
+                <Route
+                  exact
+                  path="/writings_app_auth_endpoint"
+                  component={EmailAuth}
+                />
+                <Route exact path="/" component={Splash} />
                 <Route
                   exact
                   path="/public/:page"
@@ -93,28 +165,30 @@ class App extends Component {
                     />
                   )}
                 />
-                <Route
-                  exact
-                  path="/today"
-                  render={() => (
-                    <Redirect to={"/" + moment().format("YYYY-MM-DD")} />
-                  )}
-                />
-                <Route exact path="/" component={LogList} />
-                <Route
-                  exact
-                  path="/writings_app_auth_endpoint"
-                  render={() => <Redirect to="/" />}
-                />
-
-                <Route exact path="/:page" component={FirebaseLogPad} />
+                <Route render={() => <Redirect to="/" />} />
               </Switch>
-            </React.Fragment>
-          )}
+            )}
+            Unknown={() => (
+              <External name="detect firebase auth">
+                <AuthDetection />
+              </External>
+            )}
+          />
         </div>
       </Router>
     );
   }
 }
 
-export default App;
+const WiredApp = withMachine(App);
+
+export default () => (
+  <Machinate
+    scheme={scheme}
+    initial={{ Auth: "Unknown" }}
+    ref={mach => (window.machine = mach)}
+  >
+    {/* {React.createElement(withMachine(App), null, null)} */}
+    <WiredApp />
+  </Machinate>
+);

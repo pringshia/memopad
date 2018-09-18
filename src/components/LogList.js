@@ -4,20 +4,22 @@ import firebase from "../firebase";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { getRootUrl } from "../utils";
+import { States, withState, State } from "machinate";
 
 class LogList extends React.Component {
   state = { notes: {}, loaded: false };
 
   componentDidMount() {
-    const logsRef = firebase
-      .database()
-      .ref("pages/" + firebase.auth().currentUser.uid);
-    logsRef.on("value", snapshot => {
-      this.setState({
-        notes: snapshot.val() || {},
-        loaded: true
-      });
-    });
+    const { transition, external } = this.props;
+
+    external("load notes list", () =>
+      firebase
+        .database()
+        .ref("pages/" + firebase.auth().currentUser.uid)
+        .on("value", snapshot => {
+          transition("List.Loaded", snapshot.val() || {});
+        })
+    );
   }
 
   handleDelete = id => () => {
@@ -26,38 +28,58 @@ class LogList extends React.Component {
         `Are you sure you'd like to delete the note named '${id}'?`
       )
     ) {
-      firebase
-        .database()
-        .ref("pages/" + firebase.auth().currentUser.uid + "/" + id)
-        .remove();
-      firebase
-        .database()
-        .ref("logs/" + firebase.auth().currentUser.uid + "/" + id)
-        .remove();
+      const { external } = this.props;
+      external("delete page", () => {
+        firebase
+          .database()
+          .ref("pages/" + firebase.auth().currentUser.uid + "/" + id)
+          .remove();
+        firebase
+          .database()
+          .ref("logs/" + firebase.auth().currentUser.uid + "/" + id)
+          .remove();
+      });
     }
   };
 
   handlePublic = id => () => {
-    firebase
-      .database()
-      .ref("pages/" + firebase.auth().currentUser.uid + "/" + id + "/isPublic")
-      .set(true);
+    const { external } = this.props;
+
+    external("make page public", () =>
+      firebase
+        .database()
+        .ref(
+          "pages/" + firebase.auth().currentUser.uid + "/" + id + "/isPublic"
+        )
+        .set(true)
+    );
   };
 
   handlePrivate = id => () => {
-    firebase
-      .database()
-      .ref("pages/" + firebase.auth().currentUser.uid + "/" + id + "/isPublic")
-      .set(false);
+    const { external } = this.props;
+
+    external("make page private", () =>
+      firebase
+        .database()
+        .ref(
+          "pages/" + firebase.auth().currentUser.uid + "/" + id + "/isPublic"
+        )
+        .set(false)
+    );
   };
 
   handleRename = id => () => {
+    const { external } = this.props;
+
     const newTitle = prompt("What would you like to rename the sheet to?");
     if (!newTitle) return;
-    firebase
-      .database()
-      .ref("pages/" + firebase.auth().currentUser.uid + "/" + id + "/title")
-      .set(newTitle);
+
+    external("rename page title", () =>
+      firebase
+        .database()
+        .ref("pages/" + firebase.auth().currentUser.uid + "/" + id + "/title")
+        .set(newTitle)
+    );
   };
 
   render() {
@@ -67,78 +89,88 @@ class LogList extends React.Component {
           <Link to="/">Memopad</Link>
         </h1>
         <Wrapper>
-          {this.state.loaded &&
-            Object.entries(this.state.notes).length === 0 && (
-              <div>
-                <p>You do not have any notes yet.</p>
-                <p>
-                  Create one by visiting any URL, e.g. type in{" "}
-                  <code>
-                    <Link to={"/TodaysNotes"}>
-                      {getRootUrl()}
-                      /TodaysNotes
-                    </Link>
-                  </code>
-                  in the address bar.
-                </p>
-              </div>
-            )}
-          {Object.entries(this.state.notes)
-            .sort(
-              ([_, a], [__, b]) => moment(b.createdAt) - moment(a.createdAt)
-            )
-            .map(([id, details]) => (
-              <ListItem key={id}>
-                <span className="note-name">
-                  <Link to={"/" + id}>{details.title}</Link>
-                </span>
-                <span className="note-controls">
-                  <button
-                    className="dosis danger"
-                    onClick={this.handleDelete(id)}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    className="dosis secondary"
-                    onClick={this.handleRename(id)}
-                  >
-                    Rename
-                  </button>
+          <States
+            of="List"
+            Unknown={() => null}
+            Loaded={({ data }) => (
+              <React.Fragment>
+                {Object.entries(data).length === 0 && (
+                  <div>
+                    <p>You do not have any notes yet.</p>
+                    <p>
+                      Create one by visiting any URL, e.g. type in{" "}
+                      <code>
+                        <Link to={"/TodaysNotes"}>
+                          {getRootUrl()}
+                          /TodaysNotes
+                        </Link>
+                      </code>
+                      in the address bar.
+                    </p>
+                  </div>
+                )}
+                {Object.entries(data)
+                  .sort(
+                    ([_, a], [__, b]) =>
+                      moment(b.createdAt) - moment(a.createdAt)
+                  )
+                  .map(([id, details]) => (
+                    <ListItem key={id}>
+                      <span className="note-name">
+                        <Link to={"/" + id}>{details.title}</Link>
+                      </span>
+                      <span className="note-controls">
+                        <button
+                          className="dosis danger"
+                          onClick={this.handleDelete(id)}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          className="dosis secondary"
+                          onClick={this.handleRename(id)}
+                        >
+                          Rename
+                        </button>
 
-                  {details.isPublic ? (
-                    <React.Fragment>
-                      <button
-                        className="dosis primary"
-                        onClick={this.handlePrivate(id)}
-                      >
-                        Make private
-                      </button>
-                      <Link
-                        className="dosis permalink"
-                        to={"/" + firebase.auth().currentUser.uid + "/" + id}
-                      >
-                        Permalink
-                      </Link>
-                    </React.Fragment>
-                  ) : (
-                    <button
-                      className="dosis secondary"
-                      onClick={this.handlePublic(id)}
-                    >
-                      Make public
-                    </button>
-                  )}
-                </span>
-              </ListItem>
-            ))}
+                        {details.isPublic ? (
+                          <React.Fragment>
+                            <button
+                              className="dosis primary"
+                              onClick={this.handlePrivate(id)}
+                            >
+                              Make private
+                            </button>
+                            <Link
+                              className="dosis permalink"
+                              to={
+                                "/" + firebase.auth().currentUser.uid + "/" + id
+                              }
+                            >
+                              Permalink
+                            </Link>
+                          </React.Fragment>
+                        ) : (
+                          <button
+                            className="dosis secondary"
+                            onClick={this.handlePublic(id)}
+                          >
+                            Make public
+                          </button>
+                        )}
+                      </span>
+                    </ListItem>
+                  ))}
+              </React.Fragment>
+            )}
+          />
         </Wrapper>
       </React.Fragment>
     );
   }
 }
 
-export default LogList;
+export default withState("Display.List", LogList);
 
 const Wrapper = styled.div`
   padding: 0 75px;

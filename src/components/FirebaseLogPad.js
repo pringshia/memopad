@@ -4,47 +4,76 @@ import LogPad from "./LogPad";
 import NewLogPad from "./NewLogPad";
 import moment from "moment";
 import firebase from "../firebase";
-import { serializeEntries, deserializeEntries } from "../utils";
+import {
+  serializeEntries,
+  deserializeEntries,
+  convertTimestamps
+} from "../utils";
+import { withState, States, State } from "machinate";
 
-export default class FirebaseLogPad extends React.Component {
+class FirebaseLogPad extends React.Component {
   state = { entries: [], selectedTag: null, newPage: null, unauthorized: null };
 
   componentDidMount() {
-    firebase
-      .database()
-      .ref("pages/" + this.getPagePath())
-      .on(
-        "value",
-        snapshot => {
-          const pageDetails = snapshot.val();
-          if (!pageDetails) {
-            this.setState({ newPage: true });
-          } else {
-            this.setState({ title: pageDetails.title });
-            const logsRef = firebase
-              .database()
-              .ref("logs/" + this.getPagePath());
-            logsRef.on("value", snapshot => {
-              this.setState({
-                entries: deserializeEntries(snapshot.val()),
-                newPage: false
+    const { external, transition } = this.props;
+
+    external("load sheet metadata", () =>
+      firebase
+        .database()
+        .ref("pages/" + this.getPagePath())
+        .on(
+          "value",
+          snapshot => {
+            const pageDetails = snapshot.val();
+            if (!pageDetails) {
+              transition("Sheet.New");
+              ////
+              // this.setState({ newPage: true });
+            } else {
+              // transition("Sheet.Loaded", { title: pageDetails.title });
+              ////
+              // this.setState({ title: pageDetails.title });
+
+              external("load sheet contents", () => {
+                firebase
+                  .database()
+                  .ref("logs/" + this.getPagePath())
+                  .on("value", snapshot => {
+                    transition("Sheet.Loaded", {
+                      title: pageDetails.title,
+                      entries: deserializeEntries(snapshot.val())
+                    });
+                    ////
+                    // this.setState({
+                    //   entries: convertTimestamps(
+                    //     deserializeEntries(snapshot.val())
+                    //   ),
+                    //   newPage: false
+                    // });
+                  });
               });
-            });
+            }
+          },
+          error => {
+            if (error.code === "PERMISSION_DENIED") {
+              transition("Sheet.Unauthorized");
+              ////
+              // this.setState({ unauthorized: true });
+            }
           }
-        },
-        error => {
-          if (error.code === "PERMISSION_DENIED") {
-            this.setState({ unauthorized: true });
-          }
-        }
-      );
+        )
+    );
   }
 
   synchronize() {
-    firebase
-      .database()
-      .ref("logs/" + this.getPagePath())
-      .set(serializeEntries(this.state.entries));
+    const { external, query } = this.props;
+
+    external("synchronize", () =>
+      firebase
+        .database()
+        .ref("logs/" + this.getPagePath())
+        .set(serializeEntries(query("Sheet.Loaded").entries))
+    );
   }
 
   hashCode = str => {
@@ -61,18 +90,25 @@ export default class FirebaseLogPad extends React.Component {
   };
 
   handlePageName = name => {
-    firebase
-      .database()
-      .ref("pages/" + this.getPagePath())
-      .set({
-        title: name ? name : this.getPage(),
-        createdAt: moment().format()
-      });
+    const { external, transition } = this.props;
 
-    this.setState({ newPage: false });
+    external("create new page", () =>
+      firebase
+        .database()
+        .ref("pages/" + this.getPagePath())
+        .set({
+          title: name ? name : this.getPage(),
+          createdAt: moment().format()
+        })
+    );
+
+    transition("Sheet.Loaded", { title: name ? name : this.getPage() });
+
+    ////
+    // this.setState({ newPage: false });
   };
 
-  getPage = () => this.props.match.params.page || "Default";
+  getPage = () => this.props.params.page || "Default";
   getPagePath = () => {
     return (
       (this.props.userId
@@ -83,33 +119,64 @@ export default class FirebaseLogPad extends React.Component {
 
   handleNewEntry = contents => {
     const currentTime = moment();
-    this.setState(
-      {
-        entries: [
-          ...this.state.entries,
-          {
-            type: "entry",
-            contents,
-            timestamp: currentTime,
-            id: this.hashCode(currentTime.valueOf() + contents)
-          }
-        ]
-      },
-      this.synchronize
-    );
+
+    const { update } = this.props;
+
+    update("Sheet.Loaded", data => ({
+      ...data,
+      entries: [
+        ...data.entries,
+        {
+          type: "entry",
+          contents,
+          timestamp: currentTime.toJSON(),
+          id: this.hashCode(currentTime.valueOf() + contents)
+        }
+      ]
+    }));
+    this.synchronize();
+
+    ////
+    // this.setState(
+    //   {
+    //     entries: [
+    //       ...this.state.entries,
+    //       {
+    //         type: "entry",
+    //         contents,
+    //         timestamp: currentTime,
+    //         id: this.hashCode(currentTime.valueOf() + contents)
+    //       }
+    //     ]
+    //   },
+    //   this.synchronize
+    // );
   };
 
   handleDelete = id => {
-    this.setState(
-      {
-        entries: this.state.entries.filter(entry => entry.id !== id)
-      },
-      this.synchronize
-    );
+    const { update } = this.props;
+
+    update("Sheet.Loaded", data => ({
+      ...data,
+      entries: data.entries.filter(entry => entry.id !== id)
+    }));
+    this.synchronize();
+
+    ////
+    // this.setState(
+    //   {
+    //     entries: this.state.entries.filter(entry => entry.id !== id)
+    //   },
+    //   this.synchronize
+    // );
   };
 
   handleInsertBefore = id => {
-    const entryIndex = this.state.entries.findIndex(entry => entry.id === id);
+    const { update, query } = this.props;
+
+    const entryIndex = query("Sheet.Loaded").entries.findIndex(
+      entry => entry.id === id
+    );
     const headerContents = prompt("Header name:");
     if (!headerContents) return;
     const currentTime = moment();
@@ -119,40 +186,70 @@ export default class FirebaseLogPad extends React.Component {
       timestamp: currentTime,
       id: this.hashCode(currentTime.valueOf() + headerContents)
     };
-    let newArray = [...this.state.entries];
-    newArray.splice(entryIndex, 0, headerBlock);
-    this.setState(
-      {
-        entries: newArray
-      },
-      this.synchronize
-    );
+
+    update("Sheet.Loaded", data => {
+      let newArray = [...data.entries];
+      newArray.splice(entryIndex, 0, headerBlock);
+
+      return { ...data, entries: newArray };
+    });
+    this.synchronize();
+
+    ////
+    // let newArray = [...data.entries];
+    // newArray.splice(entryIndex, 0, headerBlock);
+
+    // this.setState(
+    //   {
+    //     entries: newArray
+    //   },
+    //   this.synchronize
+    // );
   };
 
   handleEdit = id => {
-    const entry = this.state.entries.find(entry => entry.id === id);
+    const { update, query } = this.props;
+
+    const entry = query("Sheet.Loaded").entries.find(entry => entry.id === id);
     const newContents = prompt("Editing:", entry.contents);
 
     if (!newContents) return;
 
     const newEntry = { ...entry, contents: newContents };
-    this.setState(
-      {
-        entries: this.state.entries.map(
-          entry => (entry.id === id ? newEntry : entry)
-        )
-      },
-      this.synchronize
-    );
+
+    update("Sheet.Loaded", data => ({
+      ...data,
+      entries: data.entries.map(entry => (entry.id === id ? newEntry : entry))
+    }));
+    this.synchronize();
+
+    ////
+    // this.setState(
+    //   {
+    //     entries: this.state.entries.map(
+    //       entry => (entry.id === id ? newEntry : entry)
+    //     )
+    //   },
+    //   this.synchronize
+    // );
   };
 
   handleImport = data => {
-    this.setState(
-      {
-        entries: deserializeEntries(data)
-      },
-      this.synchronize
-    );
+    const { update } = this.props;
+
+    update("Sheet.Loaded", prevData => ({
+      ...prevData,
+      entries: deserializeEntries(data)
+    }));
+    this.synchronize();
+
+    ////
+    // this.setState(
+    //   {
+    //     entries: convertTimestamps(deserializeEntries(data))
+    //   },
+    //   this.synchronize
+    // );
   };
 
   render() {
@@ -160,38 +257,46 @@ export default class FirebaseLogPad extends React.Component {
       <React.Fragment>
         <h1 className="title dosis text-4xl uppercase">
           <Link to="/">Memopad</Link>{" "}
-          {this.state.title && (
-            <span className="subtitle">/ {this.state.title}</span>
-          )}
+          <State of="Sheet.Loaded">
+            {({ data: { title } }) => (
+              <span className="subtitle">/ {title}</span>
+            )}
+          </State>
         </h1>
-        {this.state.unauthorized === true ? (
-          <h3 style={{ marginLeft: 75 }}>
-            You do not have permissions to view this page.
-          </h3>
-        ) : (
-          <div>
-            {this.state.newPage === null ? null : this.state.newPage ===
-            true ? (
-              <NewLogPad
-                {...this.props}
-                defaultPageName={this.getPage()}
-                onPageName={this.handlePageName}
-              />
-            ) : (
+        <States
+          of="Sheet"
+          Unknown={() => null}
+          Unauthorized={() => (
+            <h3 style={{ marginLeft: 75 }}>
+              You do not have permissions to view this page.
+            </h3>
+          )}
+          New={() => (
+            <NewLogPad
+              {...this.props}
+              defaultPageName={this.getPage()}
+              onPageName={this.handlePageName}
+            />
+          )}
+          Loaded={({ data }) => {
+            // console.log("here");
+            return (
               <LogPad
                 readOnly={this.props.readOnly}
-                title={this.state.title}
-                entries={this.state.entries}
+                title={data.title}
+                entries={convertTimestamps(data.entries)}
                 onInsertBefore={this.handleInsertBefore}
                 onDelete={this.handleDelete}
                 onEdit={this.handleEdit}
                 onNewEntry={this.handleNewEntry}
                 onImport={this.handleImport}
               />
-            )}
-          </div>
-        )}
+            );
+          }}
+        />
       </React.Fragment>
     );
   }
 }
+
+export default withState("Display.Sheet", FirebaseLogPad);

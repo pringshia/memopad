@@ -2022,6 +2022,12 @@ d@1:
   dependencies:
     es5-ext "^0.10.9"
 
+dagjs@^0.1.3:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/dagjs/-/dagjs-0.1.4.tgz#4f781d8a1cc9eca440caea26e5dd313961640926"
+  dependencies:
+    es6-error "^4.0.2"
+
 damerau-levenshtein@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.4.tgz#03191c432cb6eea168bb77f3a55ffdccb8978514"
@@ -2396,6 +2402,10 @@ es5-ext@^0.10.14, es5-ext@^0.10.35, es5-ext@^0.10.9, es5-ext@~0.10.14:
     es6-iterator "~2.0.3"
     es6-symbol "~3.1.1"
     next-tick "1"
+
+es6-error@^4.0.2:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/es6-error/-/es6-error-4.1.1.tgz#9e3af407459deed47e9a91f9b885a84eb05c561d"
 
 es6-iterator@^2.0.1, es6-iterator@~2.0.1, es6-iterator@~2.0.3:
   version "2.0.3"
@@ -4622,6 +4632,22 @@ macaddress@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
 
+machinate-plugins-inspector@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/machinate-plugins-inspector/-/machinate-plugins-inspector-1.0.3.tgz#cea0ac858cc2594330f46224f0325b92e77bd146"
+  dependencies:
+    prop-types "^15.6.1"
+    react-frame-component "^2.0.2"
+
+machinate@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/machinate/-/machinate-1.1.3.tgz#3afb6881b500ce268b4006c55244b0e81e774e69"
+  dependencies:
+    dagjs "^0.1.3"
+    hoist-non-react-statics "^2.5.0"
+    prop-types "^15.6.0"
+    react "^16.2.0"
+
 make-dir@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-1.2.0.tgz#6d6a49eead4aae296c53bbf3a1a008bd6c89469b"
@@ -5782,7 +5808,7 @@ prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.6.0:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-prop-types@^15.6.1:
+prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   dependencies:
@@ -5973,6 +5999,10 @@ react-firebaseui@^3.0.6:
   dependencies:
     firebaseui "^3.2.0"
 
+react-frame-component@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/react-frame-component/-/react-frame-component-2.0.2.tgz#e602a980e1d78f91f471531225b61cfdbf68e614"
+
 react-router-dom@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-4.3.1.tgz#4c2619fc24c4fa87c9fd18f4fb4a43fe63fbd5c6"
@@ -6040,6 +6070,15 @@ react-scripts@1.1.4:
     whatwg-fetch "2.0.3"
   optionalDependencies:
     fsevents "^1.1.3"
+
+react@^16.2.0:
+  version "16.5.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.5.1.tgz#8cb8e9f8cdcb4bde41c9a138bfbf907e66132372"
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    schedule "^0.4.0"
 
 react@^16.3.1:
   version "16.3.1"
@@ -6438,6 +6477,12 @@ sane@~1.6.0:
 sax@^1.2.1, sax@^1.2.4, sax@~1.2.1:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
+
+schedule@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.4.0.tgz#fa20cfd0bfbf91c47d02272fd7096780d3170bbb"
+  dependencies:
+    object-assign "^4.1.1"
 
 schema-utils@^0.3.0:
   version "0.3.0"

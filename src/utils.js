@@ -4,13 +4,18 @@ export function serializeEntries(entries) {
   return JSON.stringify(
     entries.map(e => ({
       ...e,
-      timestamp: e.timestamp.toJSON()
+      timestamp:
+        typeof e.timestamp === "string" ? e.timestamp : e.timestamp.toJSON()
     }))
   );
 }
 
 export function deserializeEntries(jsonString) {
-  return (JSON.parse(jsonString) || []).map(e => ({
+  return JSON.parse(jsonString) || [];
+}
+
+export function convertTimestamps(entries) {
+  return entries.map(e => ({
     ...e,
     timestamp: moment(e.timestamp)
   }));
