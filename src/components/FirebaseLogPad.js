@@ -189,7 +189,7 @@ class FirebaseLogPad extends React.Component {
     const headerBlock = {
       type: "header",
       contents: headerContents,
-      timestamp: currentTime,
+      timestamp: currentTime.toJSON(),
       id: this.hashCode(currentTime.valueOf() + headerContents)
     };
 
@@ -271,7 +271,7 @@ class FirebaseLogPad extends React.Component {
         </h1>
         <States
           of="Sheet"
-          Unknown={() => <div class="spinner" />}
+          Unknown={() => <div className="spinner" />}
           Unauthorized={() => (
             <h3 style={{ marginLeft: 75 }}>
               You do not have permissions to view this page.

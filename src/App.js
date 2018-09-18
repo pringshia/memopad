@@ -129,7 +129,7 @@ class App extends Component {
                 </Switch>
                 <States
                   of="Display"
-                  Unknown={() => <div class="spinner" />}
+                  Unknown={() => <div className="spinner" />}
                   Sheet={({ data }) => <FirebaseLogPad params={data} />}
                   List={({ data }) => <LogList params={data} />}
                 />
@@ -172,10 +172,10 @@ class App extends Component {
               <React.Fragment>
                 <External
                   name="detect firebase auth"
-                  fallback={<div class="spinner" />}
+                  fallback={<div className="spinner" />}
                 >
                   <AuthDetection />
-                  <div class="spinner" />
+                  <div className="spinner" />
                 </External>
               </React.Fragment>
             )}
