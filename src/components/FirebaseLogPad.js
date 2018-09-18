@@ -14,55 +14,61 @@ import { withState, States, State } from "machinate";
 class FirebaseLogPad extends React.Component {
   state = { entries: [], selectedTag: null, newPage: null, unauthorized: null };
 
+  componentWillUnmount() {
+    if (this.firebaseLoadRef) {
+      this.firebaseLoadRef.off();
+    }
+  }
+
   componentDidMount() {
     const { external, transition } = this.props;
 
-    external("load sheet metadata", () =>
-      firebase
+    external("load sheet metadata", () => {
+      this.firebaseLoadRef = firebase
         .database()
-        .ref("pages/" + this.getPagePath())
-        .on(
-          "value",
-          snapshot => {
-            const pageDetails = snapshot.val();
-            if (!pageDetails) {
-              transition("Sheet.New");
-              ////
-              // this.setState({ newPage: true });
-            } else {
-              // transition("Sheet.Loaded", { title: pageDetails.title });
-              ////
-              // this.setState({ title: pageDetails.title });
+        .ref("pages/" + this.getPagePath());
+      this.firebaseLoadRef.on(
+        "value",
+        snapshot => {
+          const pageDetails = snapshot.val();
+          if (!pageDetails) {
+            transition("Sheet.New");
+            ////
+            // this.setState({ newPage: true });
+          } else {
+            // transition("Sheet.Loaded", { title: pageDetails.title });
+            ////
+            // this.setState({ title: pageDetails.title });
 
-              external("load sheet contents", () => {
-                firebase
-                  .database()
-                  .ref("logs/" + this.getPagePath())
-                  .on("value", snapshot => {
-                    transition("Sheet.Loaded", {
-                      title: pageDetails.title,
-                      entries: deserializeEntries(snapshot.val())
-                    });
-                    ////
-                    // this.setState({
-                    //   entries: convertTimestamps(
-                    //     deserializeEntries(snapshot.val())
-                    //   ),
-                    //   newPage: false
-                    // });
+            external("load sheet contents", () => {
+              firebase
+                .database()
+                .ref("logs/" + this.getPagePath())
+                .on("value", snapshot => {
+                  transition("Sheet.Loaded", {
+                    title: pageDetails.title,
+                    entries: deserializeEntries(snapshot.val())
                   });
-              });
-            }
-          },
-          error => {
-            if (error.code === "PERMISSION_DENIED") {
-              transition("Sheet.Unauthorized");
-              ////
-              // this.setState({ unauthorized: true });
-            }
+                  ////
+                  // this.setState({
+                  //   entries: convertTimestamps(
+                  //     deserializeEntries(snapshot.val())
+                  //   ),
+                  //   newPage: false
+                  // });
+                });
+            });
           }
-        )
-    );
+        },
+        error => {
+          if (error.code === "PERMISSION_DENIED") {
+            transition("Sheet.Unauthorized");
+            ////
+            // this.setState({ unauthorized: true });
+          }
+        }
+      );
+    });
   }
 
   synchronize() {
