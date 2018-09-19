@@ -36,7 +36,9 @@ const AuthDetection = withMachine(
         this.unregisterAuthObserver = firebase
           .auth()
           .onAuthStateChanged(user => {
-            !!user ? transition("Auth.SignedIn") : transition("Auth.SignedOut");
+            !!user
+              ? transition("Auth.SignedIn", user.uid)
+              : transition("Auth.SignedOut");
           });
       });
       // .onAuthStateChanged(user => this.setState({ isSignedIn: !!user }));
@@ -61,22 +63,107 @@ class App extends Component {
         <div className="pl-2 pr-2 sm:p-8 sm:pt-16 pt-16">
           <Inspector />
 
-          <States
-            of="Auth"
-            SignedIn={() => (
-              <React.Fragment>
-                <div className="dosis text-xs uppercase navbar">
-                  <Link to="/" className="logo">
-                    M
-                  </Link>
-                  <a
-                    className="cursor-pointer"
-                    onClick={() => firebase.auth().signOut()}
-                  >
-                    Log out
-                  </a>
-                </div>
+          <LogMount id="yo">
+            <States
+              of="Auth"
+              SignedIn={() => (
+                <LogMount id="render-prop states">
+                  <React.Fragment key="test">
+                    <div className="dosis text-xs uppercase navbar">
+                      <Link to="/" className="logo">
+                        M
+                      </Link>
+                      <a
+                        className="cursor-pointer"
+                        onClick={() => firebase.auth().signOut()}
+                      >
+                        Log out
+                      </a>
+                    </div>
+                    <Switch>
+                      <Route
+                        exact
+                        path="/public/:page"
+                        render={props => (
+                          <FirebaseLogPad
+                            userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
+                            readOnly
+                            {...props}
+                          />
+                        )}
+                      />
+                      <Route
+                        exact
+                        path="/:userId/:page"
+                        render={props => (
+                          <FirebaseLogPad
+                            userId={props.match.params.userId}
+                            readOnly
+                            {...props}
+                          />
+                        )}
+                      />
+                      <Route
+                        exact
+                        path="/today"
+                        render={() => (
+                          <Redirect to={"/" + moment().format("YYYY-MM-DD")} />
+                        )}
+                      />
+                      <Route
+                        exact
+                        path="/"
+                        render={props => (
+                          <External doNotRefresh name="router-change">
+                            <Transition to="Display.List" />
+                          </External>
+                        )}
+                      />
+                      <Route
+                        exact
+                        path="/writings_app_auth_endpoint"
+                        render={() => <Redirect to="/" />}
+                      />
+
+                      <LogMount id="Route">
+                        <Route
+                          exact
+                          path="/:page"
+                          render={props => (
+                            <LogMount id="render prop">
+                              <External
+                                doNotRefresh
+                                key="test"
+                                name="router-change"
+                              >
+                                <Transition
+                                  key="test"
+                                  to="Display.Sheet"
+                                  data={props.match.params}
+                                />
+                              </External>
+                            </LogMount>
+                          )}
+                        />
+                      </LogMount>
+                    </Switch>
+                    <States
+                      of="Display"
+                      Unknown={() => <div className="spinner" />}
+                      Sheet={({ data }) => <FirebaseLogPad params={data} />}
+                      List={({ data }) => <LogList params={data} />}
+                    />
+                  </React.Fragment>
+                </LogMount>
+              )}
+              SignedOut={() => (
                 <Switch>
+                  <Route
+                    exact
+                    path="/writings_app_auth_endpoint"
+                    component={EmailAuth}
+                  />
+                  <Route exact path="/" component={Splash} />
                   <Route
                     exact
                     path="/public/:page"
@@ -99,94 +186,22 @@ class App extends Component {
                       />
                     )}
                   />
-                  <Route
-                    exact
-                    path="/today"
-                    render={() => (
-                      <Redirect to={"/" + moment().format("YYYY-MM-DD")} />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/"
-                    render={props => (
-                      <External name="router-change">
-                        <Transition to="Display.List" />
-                      </External>
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/writings_app_auth_endpoint"
-                    render={() => <Redirect to="/" />}
-                  />
-
-                  <Route
-                    exact
-                    path="/:page"
-                    render={props => (
-                      <External name="router-change">
-                        <Transition
-                          to="Display.Sheet"
-                          data={props.match.params}
-                        />
-                      </External>
-                    )}
-                  />
+                  <Route render={() => <Redirect to="/" />} />
                 </Switch>
-                <States
-                  of="Display"
-                  Unknown={() => <div className="spinner" />}
-                  Sheet={({ data }) => <FirebaseLogPad params={data} />}
-                  List={({ data }) => <LogList params={data} />}
-                />
-              </React.Fragment>
-            )}
-            SignedOut={() => (
-              <Switch>
-                <Route
-                  exact
-                  path="/writings_app_auth_endpoint"
-                  component={EmailAuth}
-                />
-                <Route exact path="/" component={Splash} />
-                <Route
-                  exact
-                  path="/public/:page"
-                  render={props => (
-                    <FirebaseLogPad
-                      userId="SqDB1Fv1fMNAhza2ksTQJglKC6v2"
-                      readOnly
-                      {...props}
-                    />
-                  )}
-                />
-                <Route
-                  exact
-                  path="/:userId/:page"
-                  render={props => (
-                    <FirebaseLogPad
-                      userId={props.match.params.userId}
-                      readOnly
-                      {...props}
-                    />
-                  )}
-                />
-                <Route render={() => <Redirect to="/" />} />
-              </Switch>
-            )}
-            Unknown={() => (
-              <React.Fragment>
-                <External
-                  name="detect firebase auth"
-                  fallback={<div className="spinner" />}
-                >
-                  <AuthDetection />
-                  <div className="spinner" />
-                </External>
-              </React.Fragment>
-            )}
-          />
+              )}
+              Unknown={() => (
+                <React.Fragment>
+                  <External
+                    name="detect firebase auth"
+                    fallback={<div className="spinner" />}
+                  >
+                    <AuthDetection />
+                    <div className="spinner" />
+                  </External>
+                </React.Fragment>
+              )}
+            />
+          </LogMount>
         </div>
       </Router>
     );
@@ -205,3 +220,12 @@ export default () => (
     <WiredApp />
   </Machinate>
 );
+
+class LogMount extends React.Component {
+  componentDidMount() {
+    console.log("log mount", this.props.id);
+  }
+  render() {
+    return this.props.children;
+  }
+}

@@ -6,21 +6,28 @@ import moment from "moment";
 import { getRootUrl } from "../utils";
 import { States, withState, State } from "machinate";
 
-class LogList extends React.Component {
-  state = { notes: {}, loaded: false };
+const Unknown = withState(
+  "List.Unknown",
+  class extends React.Component {
+    componentDidMount() {
+      const { transition } = this.props;
 
-  componentDidMount() {
-    const { transition, external } = this.props;
-
-    external("load notes list", () =>
       firebase
         .database()
         .ref("pages/" + firebase.auth().currentUser.uid)
         .on("value", snapshot => {
           transition("List.Loaded", snapshot.val() || {});
-        })
-    );
+        });
+    }
+
+    render() {
+      return <div className="spinner" />;
+    }
   }
+);
+
+class LogList extends React.Component {
+  state = { notes: {}, loaded: false };
 
   handleDelete = id => () => {
     if (
@@ -91,7 +98,11 @@ class LogList extends React.Component {
         <Wrapper>
           <States
             of="List"
-            Unknown={() => <div className="spinner" />}
+            Unknown={props => (
+              <props.External name="load notes list">
+                <Unknown {...props} />
+              </props.External>
+            )}
             Loaded={({ data }) => (
               <React.Fragment>
                 {Object.entries(data).length === 0 && (

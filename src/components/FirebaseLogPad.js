@@ -11,65 +11,78 @@ import {
 } from "../utils";
 import { withState, States, State } from "machinate";
 
-class FirebaseLogPad extends React.Component {
-  state = { entries: [], selectedTag: null, newPage: null, unauthorized: null };
-
+const Unknown = class extends React.Component {
+  getPage = () => {
+    const data = this.props.query("Display.Sheet");
+    return (data && data.page) || "Default";
+  };
+  getPagePath = () => {
+    const userId = this.props.query("Auth.SignedIn");
+    return (
+      (this.props.userId ? this.props.userId + "/" : userId + "/") +
+      this.getPage()
+    );
+  };
   componentWillUnmount() {
     if (this.firebaseLoadRef) {
       this.firebaseLoadRef.off();
     }
   }
-
   componentDidMount() {
     const { external, transition } = this.props;
 
-    external("load sheet metadata", () => {
-      this.firebaseLoadRef = firebase
-        .database()
-        .ref("pages/" + this.getPagePath());
-      this.firebaseLoadRef.on(
-        "value",
-        snapshot => {
-          const pageDetails = snapshot.val();
-          if (!pageDetails) {
-            transition("Sheet.New");
-            ////
-            // this.setState({ newPage: true });
-          } else {
-            // transition("Sheet.Loaded", { title: pageDetails.title });
-            ////
-            // this.setState({ title: pageDetails.title });
+    this.firebaseLoadRef = firebase
+      .database()
+      .ref("pages/" + this.getPagePath());
+    this.firebaseLoadRef.on(
+      "value",
+      snapshot => {
+        const pageDetails = snapshot.val();
+        if (!pageDetails) {
+          transition("Sheet.New");
+          ////
+          // this.setState({ newPage: true });
+        } else {
+          // transition("Sheet.Loaded", { title: pageDetails.title });
+          ////
+          // this.setState({ title: pageDetails.title });
 
-            external("load sheet contents", () => {
-              firebase
-                .database()
-                .ref("logs/" + this.getPagePath())
-                .on("value", snapshot => {
-                  transition("Sheet.Loaded", {
-                    title: pageDetails.title,
-                    entries: deserializeEntries(snapshot.val())
-                  });
-                  ////
-                  // this.setState({
-                  //   entries: convertTimestamps(
-                  //     deserializeEntries(snapshot.val())
-                  //   ),
-                  //   newPage: false
-                  // });
+          external("load sheet contents", () => {
+            firebase
+              .database()
+              .ref("logs/" + this.getPagePath())
+              .on("value", snapshot => {
+                transition("Sheet.Loaded", {
+                  title: pageDetails.title,
+                  entries: deserializeEntries(snapshot.val())
                 });
-            });
-          }
-        },
-        error => {
-          if (error.code === "PERMISSION_DENIED") {
-            transition("Sheet.Unauthorized");
-            ////
-            // this.setState({ unauthorized: true });
-          }
+                ////
+                // this.setState({
+                //   entries: convertTimestamps(
+                //     deserializeEntries(snapshot.val())
+                //   ),
+                //   newPage: false
+                // });
+              });
+          });
         }
-      );
-    });
+      },
+      error => {
+        if (error.code === "PERMISSION_DENIED") {
+          transition("Sheet.Unauthorized");
+          ////
+          // this.setState({ unauthorized: true });
+        }
+      }
+    );
   }
+  render() {
+    return <div className="spinner" />;
+  }
+};
+
+class FirebaseLogPad extends React.Component {
+  state = { entries: [], selectedTag: null, newPage: null, unauthorized: null };
 
   synchronize() {
     const { external, query } = this.props;
@@ -117,12 +130,15 @@ class FirebaseLogPad extends React.Component {
     // this.setState({ newPage: false });
   };
 
-  getPage = () => this.props.params.page || "Default";
+  getPage = () => {
+    const data = this.props.query("Display.Sheet");
+    return (data && data.page) || "Default";
+  };
   getPagePath = () => {
+    const userId = this.props.query("Auth.SignedIn");
     return (
-      (this.props.userId
-        ? this.props.userId + "/"
-        : firebase.auth().currentUser.uid + "/") + this.getPage()
+      (this.props.userId ? this.props.userId + "/" : userId + "/") +
+      this.getPage()
     );
   };
 
@@ -274,7 +290,11 @@ class FirebaseLogPad extends React.Component {
         </h1>
         <States
           of="Sheet"
-          Unknown={() => <div className="spinner" />}
+          Unknown={props => (
+            <props.External name="load sheet metadata">
+              <Unknown {...props} />
+            </props.External>
+          )}
           Unauthorized={() => (
             <h3 style={{ marginLeft: 75 }}>
               You do not have permissions to view this page.
