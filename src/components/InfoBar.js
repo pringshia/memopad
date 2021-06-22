@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-const InfoBar = ({ children, ...props }) => {
+const InfoBar = ({ children, noDivider = false, ...props }) => {
   return (
     <Wrapper {...props}>
-      <hr />
+      {noDivider? null : <hr />}
       <div className="info block dosis">{children}</div>
     </Wrapper>
   );

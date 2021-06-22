@@ -129,7 +129,7 @@ export class LogPad extends React.Component {
             entry.timestamp
           );
           if (timejump) {
-            nodes.push(<InfoBar key={timejump}>{timejump}</InfoBar>);
+            nodes.push(<InfoBar noDivider={true} key={timejump}>{timejump}</InfoBar>);
           }
           nodes.push(
             <Block
